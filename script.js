@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded', function () {
 // Load shader source
 async function loadShaderSource(url) {
     const response = await fetch(url);
+    if (!response.ok) {
+        console.error(`Failed to load shader from ${url}`);
+        return null;
+    }
     return await response.text();
 }
 
@@ -42,8 +46,18 @@ async function initShaders(gl) {
     const vertexShaderSource = await loadShaderSource('vertexShader.glsl');
     const fragmentShaderSource = await loadShaderSource('fragmentShader.glsl');
 
+    if (!vertexShaderSource || !fragmentShaderSource) {
+        console.error("Failed to load shader sources.");
+        return null;
+    }
+
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+    if (!vertexShader || !fragmentShader) {
+        console.error("Failed to compile shaders.");
+        return null;
+    }
 
     const program = gl.createProgram();
     gl.attachShader(program, vertexShader);
@@ -52,6 +66,7 @@ async function initShaders(gl) {
 
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
         console.error("Shader program linking error:", gl.getProgramInfoLog(program));
+        return null;
     }
 
     return program;
