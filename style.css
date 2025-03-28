@@ -31,36 +31,33 @@ body, html {
 }
 
 #controls {
-    position: fixed;
-    top: 0;
-    right: -300px;
-    width: 300px;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.8);
     padding: 10px;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
-    transition: right 0.3s ease-in-out;
-}
-
-#controls.open {
-    right: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
 }
 
 #control-header {
-    cursor: move;
-    background: rgba(51, 51, 51, 0.8);
-    color: #fff;
-    padding: 5px;
+    text-align: center;
     font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
 }
 
 #controls label {
     display: block;
     margin-top: 10px;
-    color: #fff;
+    color: #333;
 }
 
-#controls input[type="range"] {
+#controls input[type="range"],
+#controls select {
     width: 100%;
 }
 
@@ -70,7 +67,7 @@ body, html {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    background: rgba(0, 0, 0, 0.5);
+    background: #333;
     color: #fff;
     border: none;
     border-radius: 5px;
