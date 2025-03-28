@@ -165,5 +165,39 @@
         canvas.addEventListener('touchmove', handleTouchEvent);
         canvas.addEventListener('touchend', handleTouchEvent);
     </script>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Existing head content -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/midi.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Existing body content -->
+    <canvas id="glCanvas"></canvas>
+
+    <!-- MIDI Controller -->
+    <div id="midi-controller">
+        <button id="note1">Note 1</button>
+        <button id="note2">Note 2</button>
+        <button id="note3">Note 3</button>
+        <button id="note4">Note 4</button>
+        <button id="note5">Note 5</button>
+        <button id="note6">Note 6</button>
+        <button id="note7">Note 7</button>
+    </div>
+
+    <!-- Drum Pad -->
+    <div id="drum-pad">
+        <button id="bass-pad">Bass Drum</button>
+        <button id="snare-pad">Snare Drum</button>
+        <button id="ride-pad">Ride Cymbal</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+    
 </body>
 </html>
