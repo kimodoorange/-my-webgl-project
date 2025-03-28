@@ -118,40 +118,33 @@
 
         // Function to increase shape interference
         function accelerateShapeInterference() {
-            // Logic to accelerate shape interference
             console.log('Accelerating shape interference', complexity, fluidity, dimensionality, selectedFunctionType, fluidViscosity);
         }
 
         // Function for normal shape interference
         function normalShapeInterference() {
-            // Logic for normal shape interference
             console.log('Normal shape interference', complexity, fluidity, dimensionality, selectedFunctionType, fluidViscosity);
         }
 
         // Functions to update new settings
         function updateComplexity(value) {
             console.log('Updating complexity to', value);
-            // Logic to update complexity in WebGL context
         }
 
         function updateFluidity(value) {
             console.log('Updating fluidity to', value);
-            // Logic to update fluidity in WebGL context
         }
 
         function updateDimensionality(value) {
             console.log('Updating dimensionality to', value);
-            // Logic to update dimensionality in WebGL context
         }
 
         function updateFunctionType(value) {
             console.log('Updating function type to', value);
-            // Logic to update function type in WebGL context
         }
 
         function updateFluidViscosity(value) {
             console.log('Updating fluid viscosity to', value);
-            // Logic to update fluid viscosity in WebGL context
         }
 
         // Add event listeners for touch events
