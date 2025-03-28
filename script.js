@@ -11,7 +11,7 @@ const randomTextElement = document.getElementById('random-text');
 
 const colors = [["green", "blue"], ["blue", "purple"], ["purple", "violet"], ["yellow", "orange"]];
 
-const randomizeText = () => Array.from({ length: 14 }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 62))).join('');
+const randomizeText = () => Array.from({ length: 29 }, (_, i) => i % 2 === 0 ? ' K I M O D O  O R A N G E'.charAt(i) : ' ').join('');
 
 const changeTextColor = () => {
     const [color1, color2] = colors[Math.floor(Math.random() * colors.length)];
@@ -23,14 +23,14 @@ const startTextRandomization = () => {
     textOverlay.style.display = 'block';
     let elapsedTime = 0;
     const interval = setInterval(() => {
-        if (elapsedTime >= 3.14) {
-            clearInterval(interval);
-            randomTextElement.textContent = 'KIMODO ORANGE';
-            return;
-        }
         randomTextElement.textContent = randomizeText();
         changeTextColor();
         elapsedTime += 0.1;
+        if (elapsedTime >= 3.14) {
+            clearInterval(interval);
+            randomTextElement.textContent = ' K I M O D O  O R A N G E';
+            setInterval(changeTextColor, 500); // Continuous color changes
+        }
     }, 100);
 };
 
@@ -93,11 +93,8 @@ initShaders(gl).then(program => {
 
         const settings = {
             frequency: 1.0,
-            noiseVolume: 0.5,
-            noiseType: "white",
             chromaticIntensity: 0.5,
             formFluidity: 0.5,
-            complexityMode: "organic",
             pitch: 880,
             modulator: 0.5
         };
@@ -107,8 +104,6 @@ initShaders(gl).then(program => {
         Object.entries(settings).forEach(([key, value]) => {
             if (typeof value === "number") {
                 gui.add(settings, key, 0.0, 1.0).name(key.charAt(0).toUpperCase() + key.slice(1)).onChange(updateAudio);
-            } else {
-                gui.add(settings, key, ["white", "pink", "brown"]).name(key.charAt(0).toUpperCase() + key.slice(1)).onChange(updateAudio);
             }
         });
 
@@ -132,27 +127,6 @@ initShaders(gl).then(program => {
         });
 
         const shapeDecaySpeed = 0.002;
-
-        function updateComplexityMode(mode) {
-            switch (mode) {
-                case "organic":
-                    settings.formFluidity = 0.7;
-                    settings.chromaticIntensity = 0.6;
-                    break;
-                case "mechanical":
-                    settings.formFluidity = 0.3;
-                    settings.chromaticIntensity = 0.4;
-                    break;
-                case "quantum":
-                    settings.formFluidity = 1.0;
-                    settings.chromaticIntensity = 0.8;
-                    break;
-                case "fractal":
-                    settings.formFluidity = 0.5;
-                    settings.chromaticIntensity = 0.5;
-                    break;
-            }
-        }
 
         let audioContext;
         let isAudioStarted = false;
@@ -188,21 +162,7 @@ initShaders(gl).then(program => {
         requestAnimationFrame(render);
 
         function setupInfoOverlay() {
-            const infoOverlay = document.getElementById('info-overlay');
             const interactionHint = document.getElementById('interaction-hint');
-
-            document.addEventListener('mousedown', () => {
-                infoOverlay.classList.add('visible');
-                setTimeout(() => infoOverlay.classList.remove('visible'), 3000);
-            }, { once: true });
-
-            canvas.addEventListener('mousemove', event => {
-                const mouseX = event.clientX / window.innerWidth;
-                const mouseY = event.clientY / window.innerHeight;
-                settings.formFluidity = mouseX;
-                settings.chromaticIntensity = mouseY;
-            });
-
             canvas.addEventListener('mouseenter', () => interactionHint.style.opacity = '0');
             canvas.addEventListener('mouseleave', () => interactionHint.style.opacity = '0.7');
         }
@@ -220,7 +180,6 @@ initShaders(gl).then(program => {
                 case 'r':
                     const modes = ["organic", "mechanical", "quantum", "fractal"];
                     settings.complexityMode = modes[Math.floor(Math.random() * modes.length)];
-                    updateComplexityMode(settings.complexityMode);
                     break;
             }
         });
