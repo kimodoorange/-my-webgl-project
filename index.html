@@ -10,70 +10,74 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-wrap: wrap;
             overflow: hidden; /* Prevent scrolling if not needed */
         }
 
         .container {
             position: relative;
             width: 100%;
-            height: 100vh;
-            overflow: hidden;
+            height: 100%;
+        }
+
+        .dialog-box {
+            position: absolute;
+            width: 33.33%; /* 66% of the quadrant (50% of the screen width) */
+            height: 33.33%; /* 66% of the quadrant (50% of the screen height) */
+            overflow: auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .settings-element {
-            z-index: 1000; /* Ensure this is higher than the overlapping element */
-            position: absolute; /* Changed to absolute for better control */
-            top: 20px; /* Adjust positioning as needed */
-            right: 20px; /* Adjust positioning as needed */
-            background-color: #fff;
-            padding: 20px;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px; /* Adjust size as needed */
+            top: 0;
+            right: 0;
         }
 
         .overlapping-element {
-            z-index: 10; /* Lower z-index to be behind settings */
-            position: absolute; /* Adjust positioning if necessary */
-            background-color: #f0f0f0;
-            padding: 20px;
-            border: 1px solid #999;
-            top: 100px; /* Example positioning */
-            left: 50px; /* Example positioning */
-            width: 300px; /* Adjust size as needed */
+            top: 0;
+            left: 0;
         }
 
         .audio-control {
-            z-index: 1000; /* Ensure this is higher than overlapping elements */
-            position: absolute; /* Changed to absolute for better control */
-            bottom: 20px; /* Adjust positioning as needed */
-            left: 20px; /* Adjust positioning as needed */
-            background-color: #fff;
-            padding: 10px;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            bottom: 0;
+            left: 0;
+        }
+
+        .another-element {
+            bottom: 0;
+            right: 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="settings-element">
+        <div class="dialog-box settings-element">
             <!-- Settings content here -->
             <h2>Settings</h2>
             <p>Modify your settings here.</p>
         </div>
-        <div class="overlapping-element">
+        <div class="dialog-box overlapping-element">
             <!-- Overlapping content here -->
             <h2>Overlapping Element</h2>
             <p>This element should be behind the settings.</p>
         </div>
-        <div class="audio-control">
+        <div class="dialog-box audio-control">
             <!-- Audio control here -->
             <h2>Audio Control</h2>
             <audio controls>
                 <source src="your-audio-file.mp3" type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>
+        </div>
+        <div class="dialog-box another-element">
+            <!-- Another element here -->
+            <h2>Another Element</h2>
+            <p>This element is in the bottom-right corner.</p>
         </div>
     </div>
 </body>
