@@ -1,5 +1,3 @@
-// Enhanced Fractal Noise Generator with Chromatic Complexity
-
 // Select the canvas
 const canvas = document.getElementById("glCanvas");
 const gl = canvas.getContext("webgl");
@@ -13,23 +11,6 @@ if (!gl) {
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 gl.viewport(0, 0, canvas.width, canvas.height);
-
-document.addEventListener('DOMContentLoaded', function () {
-    // Ensure the audio element is correctly initialized
-    const audioElement = document.querySelector('audio');
-    audioElement.addEventListener('play', function () {
-        console.log('Audio is playing');
-    });
-
-    // Example form initialization
-    const formElement = document.querySelector('.settings-element form');
-    if (formElement) {
-        formElement.addEventListener('submit', function (event) {
-            event.preventDefault();
-            console.log('Form submitted');
-        });
-    }
-});
 
 // Load shader source
 async function loadShaderSource(url) {
@@ -256,6 +237,9 @@ initShaders(gl).then(program => {
             gl.uniform1f(formFluidityUniform, settings.formFluidity);
             gl.uniform1f(pitchUniform, settings.pitch);
 
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
             requestAnimationFrame(render);
@@ -314,95 +298,121 @@ initShaders(gl).then(program => {
                     const modes = ["organic", "mechanical", "quantum", "fractal"];
                     settings.complexityMode = modes[Math.floor(Math.random() * modes.length)];
                     updateComplexityMode(settings.complexityMode);
-                    
-                    // WebGL setup (existing code)
-// ...
-
-// Load and play drum samples
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const drumBuffers = {};
-
-async function loadDrumSamples() {
-    const drumUrls = {
-        bass: 'path/to/bass-drum.wav',
-        snare: 'path/to/snare-drum.wav',
-        ride: 'path/to/ride-cymbal.wav'
-    };
-    for (const [key, url] of Object.entries(drumUrls)) {
-        const response = await fetch(url);
-        const arrayBuffer = await response.arrayBuffer();
-        drumBuffers[key] = await audioContext.decodeAudioData(arrayBuffer);
-    }
-}
-
-function playDrumSample(drum) {
-    const bufferSource = audioContext.createBufferSource();
-    bufferSource.buffer = drumBuffers[drum];
-    bufferSource.playbackRate.value = 1 + Math.random() * 0.1 - 0.05; // Slight pitch variation
-    bufferSource.connect(audioContext.destination);
-    bufferSource.start();
-}
-
-document.getElementById('bass-pad').addEventListener('click', () => playDrumSample('bass'));
-document.getElementById('snare-pad').addEventListener('click', () => playDrumSample('snare'));
-document.getElementById('ride-pad').addEventListener('click', () => playDrumSample('ride'));
-
-loadDrumSamples();
-
-// MIDI input handling
-if (navigator.requestMIDIAccess) {
-    navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
-} else {
-    console.warn("WebMIDI is not supported in this browser.");
-}
-
-function onMIDISuccess(midiAccess) {
-    midiAccess.inputs.forEach(input => {
-        input.onmidimessage = getMIDIMessage;
-    });
-}
-
-function onMIDIFailure() {
-    console.warn("Could not access MIDI devices.");
-}
-
-function getMIDIMessage(midiMessage) {
-    const [command, note, velocity] = midiMessage.data;
-    if (command === 144 && velocity > 0) {
-        // Note On
-        playNoteWithModulation(note);
-    } else if (command === 128 || (command === 144 && velocity === 0)) {
-        // Note Off
-        stopNote();
-    }
-}
-
-function getMicrotonalPitch(note, cents) {
-    return note * Math.pow(2, cents / 1200);
-}
-
-function playNoteWithModulation(note) {
-    const baseFrequency = 440 * Math.pow(2, (note - 69) / 12);
-    const modulatedFrequency = getMicrotonalPitch(baseFrequency, Math.random() * 50 - 25);
-    // Use modulatedFrequency to influence WebGL shader or audio output
-    console.log('Playing note with frequency:', modulatedFrequency);
-}
-
-function stopNote() {
-    // Logic to stop the note
-}
-
-// User interaction to start audio
-document.addEventListener("click", setupAudio);
-
-async function setupAudio() {
-    await loadDrumSamples();
-    // Other audio setup logic
-}
-                    
-                    
                     break;
             }
+        });
+
+        // Load and play 8-bit drum samples
+        const drumBuffers = {};
+
+        async function loadDrumSamples() {
+            const drumUrls = {
+                bass: 'path/to/8bit-bass-drum.wav',
+                snare: 'path/to/8bit-snare-drum.wav',
+                ride: 'path/to/8bit-ride-cymbal.wav'
+            };
+            for (const [key, url] of Object.entries(drumUrls)) {
+                const response = await fetch(url);
+                const arrayBuffer = await response.arrayBuffer();
+                drumBuffers[key] = await audioContext.decodeAudioData(arrayBuffer);
+            }
+        }
+
+        function playDrumSample(drum) {
+            const bufferSource = audioContext.createBufferSource();
+            bufferSource.buffer = drumBuffers[drum];
+            bufferSource.playbackRate.value = 1 + Math.random() * 0.1 - 0.05; // Slight pitch variation
+            bufferSource.connect(audioContext.destination);
+            bufferSource.start();
+        }
+
+        document.getElementById('bass-pad').addEventListener('click', () => playDrumSample('bass'));
+        document.getElementById('snare-pad').addEventListener('click', () => playDrumSample('snare'));
+        document.getElementById('ride-pad').addEventListener('click', () => playDrumSample('ride'));
+
+        loadDrumSamples();
+
+        // MIDI input handling
+        if (navigator.requestMIDIAccess) {
+            navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+        } else {
+            console.warn("WebMIDI is not supported in this browser.");
+        }
+
+        function onMIDISuccess(midiAccess) {
+            midiAccess.inputs.forEach(input => {
+                input.onmidimessage = getMIDIMessage;
+            });
+        }
+
+        function onMIDIFailure() {
+            console.warn("Could not access MIDI devices.");
+        }
+
+        function getMIDIMessage(midiMessage) {
+            const [command, note, velocity] = midiMessage.data;
+            if (command === 144 && velocity > 0) {
+                // Note On
+                playNoteWithModulation(note);
+            } else if (command === 128 || (command === 144 && velocity === 0)) {
+                // Note Off
+                stopNote();
+            }
+        }
+
+        function getMicrotonalPitch(note, cents) {
+            return note * Math.pow(2, cents / 1200);
+        }
+
+        function playNoteWithModulation(note) {
+            const baseFrequency = 440 * Math.pow(2, (note - 69) / 12);
+            const modulatedFrequency = getMicrotonalPitch(baseFrequency, Math.random() * 50 - 25);
+            // Use modulatedFrequency to influence WebGL shader or audio output
+            console.log('Playing note with frequency:', modulatedFrequency);
+        }
+
+        function stopNote() {
+            // Logic to stop the note
+        }
+
+        // Accelerate shape decay automatically
+        function accelerateShapeDecay() {
+            const decayRate = 0.01; // Adjust this value to control the acceleration rate
+            let currentDecay = settings.formFluidity;
+            setInterval(() => {
+                currentDecay = Math.max(0, currentDecay - decayRate);
+                settings.formFluidity = currentDecay;
+                updateShapeDecay(currentDecay);
+            }, 100);
+        }
+
+        function updateShapeDecay(decay) {
+            // Logic to update the shape decay in WebGL shader
+            console.log('Updating shape decay to', decay);
+        }
+
+        // Start accelerating shape decay
+        accelerateShapeDecay();
+
+        // Implement cartoon fire effect for touch screen input
+        function createFireEffect(x, y) {
+            // Logic to create a cartoon fire effect at (x, y) coordinates
+            console.log('Creating fire effect at', x, y);
+        }
+
+        canvas.addEventListener('touchstart', (event) => {
+            const touch = event.touches[0];
+            createFireEffect(touch.clientX, touch.clientY);
+        });
+
+        canvas.addEventListener('touchmove', (event) => {
+            const touch = event.touches[0];
+            createFireEffect(touch.clientX, touch.clientY);
+        });
+
+        canvas.addEventListener('touchend', (event) => {
+            const touch = event.changedTouches[0];
+            createFireEffect(touch.clientX, touch.clientY);
         });
     }
 });
