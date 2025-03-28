@@ -241,6 +241,10 @@ initShaders(gl).then(program => {
             }
         });
 
+        document.getElementById('toggle-sidebar').addEventListener('click', () => {
+            controls.classList.toggle('open');
+        });
+
         // Start the text randomization and audio setup immediately
         startTextRandomization();
     }
