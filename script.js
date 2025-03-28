@@ -85,6 +85,37 @@ gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0);
 const timeUniform = gl.getUniformLocation(program, "time");
 const resolutionUniform = gl.getUniformLocation(program, "resolution");
 
+// ---- AUDIO SETUP ---- //
+let audioContext;
+let gainNode;
+let isAudioStarted = false;
+
+function setupAudio() {
+    if (!isAudioStarted) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        gainNode = audioContext.createGain();
+        gainNode.gain.value = 0.5;  // Adjust volume
+
+        const bufferSize = 4096;
+        const noiseNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
+        noiseNode.onaudioprocess = function(event) {
+            let output = event.outputBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;  // White noise
+            }
+        };
+
+        noiseNode.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        isAudioStarted = true;
+
+        console.log("Audio started");
+    }
+}
+
+// User interaction required to start audio
+document.addEventListener("click", setupAudio);
+
 // Render loop
 function render(time) {
     gl.clear(gl.COLOR_BUFFER_BIT);
