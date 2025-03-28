@@ -108,25 +108,6 @@ initShaders(gl).then(program => {
             }
         });
 
-        let isMinimized = false;
-        document.getElementById('minimize-button').addEventListener('click', () => {
-            isMinimized = !isMinimized;
-            gui.domElement.style.display = isMinimized ? 'none' : 'block';
-        });
-
-        const controls = document.getElementById('controls');
-        const header = document.getElementById('control-header');
-        header.addEventListener('mousedown', e => {
-            let offsetX = e.clientX - controls.offsetLeft;
-            let offsetY = e.clientY - controls.offsetTop;
-            const drag = e => {
-                controls.style.left = `${e.clientX - offsetX}px`;
-                controls.style.top = `${e.clientY - offsetY}px`;
-            };
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', () => document.removeEventListener('mousemove', drag), { once: true });
-        });
-
         const shapeDecaySpeed = 0.002;
 
         let audioContext, gainNode, compressor, constantOscillator;
