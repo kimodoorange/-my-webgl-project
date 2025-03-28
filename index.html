@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chromatic Fractal Noise Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
 </head>
@@ -14,7 +15,7 @@
         <span id="random-text">K I M O D O   O R A N G E</span>
     </div>
     <div id="controls" class="floating-panel">
-        <div id="control-header">Controls</div>
+        <div id="control-header" class="draggable">Controls</div>
         <label for="complexitySlider">Complexity</label>
         <input type="range" id="complexitySlider" min="0" max="1" step="0.01" value="0.5">
         <label for="fluiditySlider">Fluidity</label>
