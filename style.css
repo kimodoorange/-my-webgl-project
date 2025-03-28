@@ -24,11 +24,11 @@ body, html {
     top: 10%;
     left: 50%;
     transform: translateX(-50%);
-    width: 250px; /* Reduced width */
+    width: 225px; /* Reduced width by 25% */
     background: rgba(255, 255, 255, 0.8);
-    padding: 5px; /* Reduced padding */
+    padding: 7px; /* Reduced padding by 25% */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+    border-radius: 7px; /* Reduced border radius by 25% */
     max-height: 80%;
     overflow-y: auto;
     resize: both;
