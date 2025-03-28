@@ -13,7 +13,23 @@ if (!gl) {
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 gl.viewport(0, 0, canvas.width, canvas.height);
+document.addEventListener('DOMContentLoaded', function () {
+    // Ensure the audio element is correctly initialized
+    const audioElement = document.querySelector('audio');
+    audioElement.addEventListener('play', function () {
+        console.log('Audio is playing');
+    });
 
+    // Example form initialization
+    const formElement = document.querySelector('.settings-element form');
+    if (formElement) {
+        formElement.addEventListener('submit', function (event) {
+            event.preventDefault();
+            // Handle form submission
+            console.log('Form submitted');
+        });
+    }
+});
 // Advanced Shader Sources with Chromatic Complexity
 const vertexShaderSource = `
     attribute vec4 position;
