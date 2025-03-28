@@ -29,6 +29,11 @@
         Click to start audio / Interact with controls
     </div>
 
+    <!-- Text Overlay -->
+    <div id="text-overlay" style="position: absolute; top: 10px; width: 100%; text-align: center; font-size: 24px; font-family: 'Space Grotesk', sans-serif; display: none;">
+        <span id="random-text"></span>
+    </div>
+
     <!-- Toggle Button for Accelerating Shape Interference -->
     <label for="accelerationToggle">Accelerate Shape Interference</label>
     <input type="checkbox" id="accelerationToggle">
@@ -52,133 +57,14 @@
         <input type="range" id="fluidViscositySlider" min="0.1" max="10.0" step="0.1" value="1.0">
         <label for="pitchSlider">Chromatic Pitch</label>
         <input type="range" id="pitchSlider" min="440" max="1760" step="1" value="880">
+        <label for="pitchShiftSlider">Pitch Shift</label>
+        <input type="range" id="pitchShiftSlider" min="0.5" max="2.0" step="0.01" value="1.0">
+        <label for="modulatorSlider">Modulator</label>
+        <input type="range" id="modulatorSlider" min="0.0" max="1.0" step="0.01" value="0.5">
     </div>
 
-    <!-- Main Script -->
-    <script src="script.js"></script>
-
-    <!-- Script to Handle the Controls -->
-    <script>
-        // Get the canvas and control elements
-        const canvas = document.getElementById('glCanvas');
-        const accelerationToggle = document.getElementById('accelerationToggle');
-        const complexitySlider = document.getElementById('complexitySlider');
-        const fluiditySlider = document.getElementById('fluiditySlider');
-        const dimensionalitySlider = document.getElementById('dimensionalitySlider');
-        const functionType = document.getElementById('functionType');
-        const fluidViscositySlider = document.getElementById('fluidViscositySlider');
-        const pitchSlider = document.getElementById('pitchSlider');
-
-        // Variables to store the toggle state and slider values
-        let accelerateInterference = false;
-        let complexity = parseFloat(complexitySlider.value);
-        let fluidity = parseFloat(fluiditySlider.value);
-        let dimensionality = parseInt(dimensionalitySlider.value);
-        let selectedFunctionType = functionType.value;
-        let fluidViscosity = parseFloat(fluidViscositySlider.value);
-        let pitch = parseFloat(pitchSlider.value);
-
-        // Listen for changes on the toggle button
-        accelerationToggle.addEventListener('change', (event) => {
-            accelerateInterference = event.target.checked;
-        });
-
-        // Listen for changes on the sliders
-        complexitySlider.addEventListener('input', (event) => {
-            complexity = parseFloat(event.target.value);
-            updateComplexity(complexity);
-        });
-
-        fluiditySlider.addEventListener('input', (event) => {
-            fluidity = parseFloat(event.target.value);
-            updateFluidity(fluidity);
-        });
-
-        dimensionalitySlider.addEventListener('input', (event) => {
-            dimensionality = parseInt(event.target.value);
-            updateDimensionality(dimensionality);
-        });
-
-        functionType.addEventListener('change', (event) => {
-            selectedFunctionType = event.target.value;
-            updateFunctionType(selectedFunctionType);
-        });
-
-        fluidViscositySlider.addEventListener('input', (event) => {
-            fluidViscosity = parseFloat(event.target.value);
-            updateFluidViscosity(fluidViscosity);
-        });
-
-        pitchSlider.addEventListener('input', (event) => {
-            pitch = parseFloat(event.target.value);
-            updatePitch(pitch);
-        });
-
-        // Function to handle touch events and adjust shape interference
-        function handleTouchEvent(event) {
-            if (accelerateInterference) {
-                // Increase the shape interference
-                accelerateShapeInterference();
-            } else {
-                // Normal shape interference
-                normalShapeInterference();
-            }
-        }
-
-        // Function to increase shape interference
-        function accelerateShapeInterference() {
-            console.log('Accelerating shape interference', complexity, fluidity, dimensionality, selectedFunctionType, fluidViscosity, pitch);
-        }
-
-        // Function for normal shape interference
-        function normalShapeInterference() {
-            console.log('Normal shape interference', complexity, fluidity, dimensionality, selectedFunctionType, fluidViscosity, pitch);
-        }
-
-        // Functions to update new settings
-        function updateComplexity(value) {
-            console.log('Updating complexity to', value);
-        }
-
-        function updateFluidity(value) {
-            console.log('Updating fluidity to', value);
-        }
-
-        function updateDimensionality(value) {
-            console.log('Updating dimensionality to', value);
-        }
-
-        function updateFunctionType(value) {
-            console.log('Updating function type to', value);
-        }
-
-        function updateFluidViscosity(value) {
-            console.log('Updating fluid viscosity to', value);
-        }
-
-        function updatePitch(value) {
-            console.log('Updating pitch to', value);
-        }
-
-        // Add event listeners for touch events
-        canvas.addEventListener('touchstart', handleTouchEvent);
-        canvas.addEventListener('touchmove', handleTouchEvent);
-        canvas.addEventListener('touchend', handleTouchEvent);
-    </script>
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- Existing head content -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/midi.js"></script>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <!-- Existing body content -->
-    <canvas id="glCanvas"></canvas>
-
-    <!-- MIDI Controller -->
-    <div id="midi-controller">
+    <!-- Note Buttons -->
+    <div id="note-controls">
         <button id="note1">Note 1</button>
         <button id="note2">Note 2</button>
         <button id="note3">Note 3</button>
@@ -196,8 +82,5 @@
     </div>
 
     <script src="script.js"></script>
-</body>
-</html>
-    
 </body>
 </html>
