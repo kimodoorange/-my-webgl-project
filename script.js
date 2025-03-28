@@ -298,6 +298,62 @@ function render(time) {
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
+// Add these functions to the existing script.js
+
+// Dynamic Information Overlay
+function setupInfoOverlay() {
+    const infoOverlay = document.getElementById('info-overlay');
+    const interactionHint = document.getElementById('interaction-hint');
+    
+    // Show info overlay on first interaction
+    document.addEventListener('mousedown', () => {
+        infoOverlay.classList.add('visible');
+        setTimeout(() => {
+            infoOverlay.classList.remove('visible');
+        }, 3000);
+    }, { once: true });
+
+    // Hover interactions
+    canvas.addEventListener('mousemove', (event) => {
+        // Create subtle visual feedback
+        const mouseX = event.clientX / window.innerWidth;
+        const mouseY = event.clientY / window.innerHeight;
+        
+        // Potentially modify shader parameters based on mouse position
+        settings.formFluidity = mouseX;
+        settings.chromaticIntensity = mouseY;
+    });
+
+    // Hide/show interaction hint
+    canvas.addEventListener('mouseenter', () => {
+        interactionHint.style.opacity = '0';
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+        interactionHint.style.opacity = '0.7';
+    });
+}
+
+// Call this after the existing initialization code
+setupInfoOverlay();
+
+// Optional: Add keyboard interactions
+document.addEventListener('keydown', (event) => {
+    switch(event.key) {
+        case 'ArrowUp':
+            settings.frequency = Math.min(10.0, settings.frequency + 0.1);
+            break;
+        case 'ArrowDown':
+            settings.frequency = Math.max(0.1, settings.frequency - 0.1);
+            break;
+        case 'r':
+            // Random complexity mode
+            const modes = ["organic", "mechanical", "quantum", "fractal"];
+            settings.complexityMode = modes[Math.floor(Math.random() * modes.length)];
+            updateComplexityMode(settings.complexityMode);
+            break;
+    }
+});
     requestAnimationFrame(render);
 }
 
