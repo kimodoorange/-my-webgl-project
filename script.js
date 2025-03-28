@@ -164,8 +164,9 @@ initShaders(gl).then(program => {
 
         function setupInfoOverlay() {
             const interactionHint = document.getElementById('interaction-hint');
-            canvas.addEventListener('mouseenter', () => interactionHint.style.opacity = '0');
-            canvas.addEventListener('mouseleave', () => interactionHint.style.opacity = '0.7');
+            if (interactionHint) {
+                interactionHint.remove();
+            }
         }
 
         setupInfoOverlay();
@@ -220,10 +221,6 @@ initShaders(gl).then(program => {
                     document.exitFullscreen();
                 }
             }
-        });
-
-        document.getElementById('toggle-sidebar').addEventListener('click', () => {
-            controls.classList.toggle('open');
         });
 
         // Start the text randomization and audio setup immediately
