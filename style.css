@@ -1,169 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chromatic Fractal Noise Generator</title>
+#glCanvas {
+    width: 100%;
+    height: 100%;
+}
 
-    <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+#midi-controller, #drum-pad {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+}
 
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Google Font for enhanced typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <!-- Main Canvas -->
-    <canvas id="glCanvas"></canvas>
-
-    <!-- Information Overlay -->
-    <div id="info-overlay">
-        <h3>Chromatic Fractal Noise Generator</h3>
-        <p>Explore the boundaries of visual and audio complexity through interactive</p>
-    </div>
-
-    <!-- Interaction Hint -->
-    <div id="interaction-hint">
-        Click to start audio / Interact with controls
-    </div>
-
-    <!-- Toggle Button for Accelerating Shape Interference -->
-    <label for="accelerationToggle">Accelerate Shape Interference</label>
-    <input type="checkbox" id="accelerationToggle">
-
-    <!-- Additional Sliders and Toggles -->
-    <div id="controls">
-        <label for="complexitySlider">Complexity</label>
-        <input type="range" id="complexitySlider" min="0" max="1" step="0.01" value="0.5">
-        <label for="fluiditySlider">Fluidity</label>
-        <input type="range" id="fluiditySlider" min="0" max="1" step="0.01" value="0.5">
-        <label for="dimensionalitySlider">Dimensionality</label>
-        <input type="range" id="dimensionalitySlider" min="2" max="5" step="1" value="3">
-        <label for="functionType">Function Type</label>
-        <select id="functionType">
-            <option value="sine">Sine</option>
-            <option value="cosine">Cosine</option>
-            <option value="tangent">Tangent</option>
-            <option value="exponential">Exponential</option>
-        </select>
-        <label for="fluidViscositySlider">Fluid Viscosity</label>
-        <input type="range" id="fluidViscositySlider" min="0.1" max="10.0" step="0.1" value="1.0">
-        <label for="pitchSlider">Chromatic Pitch</label>
-        <input type="range" id="pitchSlider" min="440" max="1760" step="1" value="880">
-    </div>
-
-    <!-- Main Script -->
-    <script src="script.js"></script>
-
-    <!-- Script to Handle the Controls -->
-    <script>
-        // Get the canvas and control elements
-        const canvas = document.getElementById('glCanvas');
-        const accelerationToggle = document.getElementById('accelerationToggle');
-        const complexitySlider = document.getElementById('complexitySlider');
-        const fluiditySlider = document.getElementById('fluiditySlider');
-        const dimensionalitySlider = document.getElementById('dimensionalitySlider');
-        const functionType = document.getElementById('functionType');
-        const fluidViscositySlider = document.getElementById('fluidViscositySlider');
-        const pitchSlider = document.getElementById('pitchSlider');
-
-        // Variables to store the toggle state and slider values
-        let accelerateInterference = false;
-        let complexity = parseFloat(complexitySlider.value);
-        let fluidity = parseFloat(fluiditySlider.value);
-        let dimensionality = parseInt(dimensionalitySlider.value);
-        let selectedFunctionType = functionType.value;
-        let fluidViscosity = parseFloat(fluidViscositySlider.value);
-        let pitch = parseFloat(pitchSlider.value);
-
-        // Listen for changes on the toggle button
-        accelerationToggle.addEventListener('change', (event) => {
-            accelerateInterference = event.target.checked;
-        });
-
-        // Listen for changes on the sliders
-        complexitySlider.addEventListener('input', (event) => {
-            complexity = parseFloat(event.target.value);
-            updateComplexity(complexity);
-        });
-
-        fluiditySlider.addEventListener('input', (event) => {
-            fluidity = parseFloat(event.target.value);
-            updateFluidity(fluidity);
-        });
-
-        dimensionalitySlider.addEventListener('input', (event) => {
-            dimensionality = parseInt(event.target.value);
-            updateDimensionality(dimensionality);
-        });
-
-        functionType.addEventListener('change', (event) => {
-            selectedFunctionType = event.target.value;
-            updateFunctionType(selectedFunctionType);
-        });
-
-        fluidViscositySlider.addEventListener('input', (event) => {
-            fluidViscosity = parseFloat(event.target.value);
-            updateFluidViscosity(fluidViscosity);
-        });
-
-        pitchSlider.addEventListener('input', (event) => {
-            pitch = parseFloat(event.target.value);
-            updatePitch(pitch);
-        });
-
-        // Function to handle touch events and adjust shape interference
-        function handleTouchEvent(event) {
-            if (accelerateInterference) {
-                // Increase the shape interference
-                accelerateShapeInterference();
-            } else {
-                // Normal shape interference
-                normalShapeInterference();
-            }
-        }
-
-        // Function to increase shape interference
-        function accelerateShapeInterference() {
-            console.log('Accelerating shape interference', complexity, fluidity, dimensionality, selectedFunctionType, fluidViscosity, pitch);
-        }
-
-        // Function for normal shape interference
-        function normalShapeInterference() {
-            console.log('Normal shape interference', complexity, fluidity, dimensionality, selectedFunctionType, fluidViscosity, pitch);
-        }
-
-        // Functions to update new settings
-        function updateComplexity(value) {
-            console.log('Updating complexity to', value);
-        }
-
-        function updateFluidity(value) {
-            console.log('Updating fluidity to', value);
-        }
-
-        function updateDimensionality(value) {
-            console.log('Updating dimensionality to', value);
-        }
-
-        function updateFunctionType(value) {
-            console.log('Updating function type to', value);
-        }
-
-        function updateFluidViscosity(value) {
-            console.log('Updating fluid viscosity to', value);
-        }
-
-        function updatePitch(value) {
-            console.log('Updating pitch to', value);
-        }
-
-        // Add event listeners for touch events
-        canvas.addEventListener('touchstart', handleTouchEvent);
-        canvas.addEventListener('touchmove', handleTouchEvent);
-        canvas.addEventListener('touchend', handleTouchEvent);
-    </script>
-</body>
-</html>
+#midi-controller button, #drum-pad button {
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
