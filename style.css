@@ -3,83 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebGL Project</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-wrap: wrap;
-            overflow: hidden; /* Prevent scrolling if not needed */
-        }
+    <title>Chromatic Fractal Noise Generator</title>
 
-        .container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
 
-        .dialog-box {
-            position: absolute;
-            width: 33.33%; /* 66% of the quadrant (50% of the screen width) */
-            height: 33.33%; /* 66% of the quadrant (50% of the screen height) */
-            overflow: auto;
-            background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white background */
-            padding: 20px;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
 
-        .settings-element {
-            top: 0;
-            right: 0;
-        }
-
-        .overlapping-element {
-            top: 0;
-            left: 0;
-        }
-
-        .audio-control {
-            bottom: 0;
-            left: 0;
-        }
-
-        .another-element {
-            bottom: 0;
-            right: 0;
-        }
-    </style>
+    <!-- Google Font for enhanced typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <div class="dialog-box settings-element">
-            <h2>Settings</h2>
-            <form>
-                <label for="setting1">Setting 1:</label>
-                <input type="text" id="setting1" name="setting1"><br><br>
-                <label for="setting2">Setting 2:</label>
-                <input type="text" id="setting2" name="setting2"><br><br>
-                <input type="submit" value="Save">
-            </form>
-        </div>
-        <div class="dialog-box overlapping-element">
-            <h2>Overlapping Element</h2>
-            <p>This element should be behind the settings.</p>
-        </div>
-        <div class="dialog-box audio-control">
-            <h2>Audio Control</h2>
-            <audio controls>
-                <source src="your-audio-file.mp3" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
-        <div class="dialog-box another-element">
-            <h2>Another Element</h2>
-            <p>This element is in the bottom-right corner.</p>
-        </div>
+    <!-- Main Canvas -->
+    <canvas id="glCanvas"></canvas>
+
+    <!-- Information Overlay -->
+    <div id="info-overlay">
+        <h3>Chromatic Fractal Noise Generator</h3>
+        <p>Explore the boundaries of visual and audio complexity through interactive</p>
     </div>
-</body>
-</html>
+
+    <!-- Interaction Hint -->
+    <div id="interaction-hint">
+        Click to start audio / Interact with controls
+    </div>
+
+    <!-- Toggle Button for Accelerating Shape Interference -->
+    <label for="accelerationToggle">Accelerate Shape Interference</label>
+    <input type="checkbox" id="accelerationToggle">
+
+    <!-- Main Script -->
+    <script src="script.js"></script>
+
+    <!-- Script to Handle the Toggle Button -->
+    <script>
+        // Get the canvas and toggle elements
+        const canvas = document.getElementById('glCanvas');
+        const accelerationToggle = document.getElementById('accelerationToggle');
+
+        // Variable to store the toggle state
+        let accelerateInterference = false;
+
+        // Listen for changes on the toggle button
+        accelerationToggle.addEventListener('change', (event) => {
+            accelerateInterference = event.target.checked;
+        });
+
+        // Function to handle touch events and adjust shape interference
+        function handleTouchEvent(event) {
+            if (accelerateInterference) {
+                // Increase the shape interference
+                accelerateShapeInterference();
+            } else {
+                // Normal shape interference
+                normalShapeInterference();
+            }
+        }
+
+        // Function to increase shape interference
+        function accelerateShapeInterference() {
+            //
