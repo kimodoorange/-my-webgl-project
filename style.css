@@ -1,153 +1,45 @@
-/* Fractal Noise Generator Styling */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Project</title>
+    <style>
+        /* Example styles for your project */
+        body {
+            font-family: Arial, sans-serif;
+        }
 
-/* Root Variables for Dynamic Theming */
-:root {
-    --bg-primary: #000000;
-    --text-primary: #ffffff;
-    --accent-color: #4a4a4a;
-    --overlay-color: rgba(10, 10, 10, 0.8);
-    --transition-speed: 0.3s;
-}
+        .settings-element {
+            z-index: 1000; /* Ensure this is higher than the overlapping element */
+            position: relative; /* Ensure the element is positioned */
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-/* Base Reset and Body Styling */
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: 'Space Grotesk', 'Courier New', monospace;
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    overflow: hidden;
-}
-
-/* Canvas Styling */
-#glCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    transition: filter var(--transition-speed) ease;
-}
-
-/* GUI Styling Enhancements */
-.dg.main .close-button {
-    background-color: var(--accent-color);
-}
-
-.dg .folder {
-    background-color: var(--overlay-color);
-}
-
-.dg .c .slider {
-    background-color: var(--accent-color);
-}
-
-/* Responsive Information Overlay */
-#info-overlay {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: var(--overlay-color);
-    color: var(--text-primary);
-    padding: 15px;
-    border-radius: 10px;
-    max-width: 300px;
-    z-index: 10;
-    opacity: 0;
-    transform: translateX(20px);
-    transition: all var(--transition-speed) ease;
-    pointer-events: none;
-}
-
-#info-overlay.visible {
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
-}
-
-/* Interaction Hints */
-#interaction-hint {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: var(--overlay-color);
-    color: var(--text-primary);
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 0.9em;
-    z-index: 10;
-    opacity: 0.7;
-    transition: opacity var(--transition-speed) ease;
-}
-
-#interaction-hint:hover {
-    opacity: 1;
-}
-
-/* Title Animation Styles */
-#title-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 20;
-}
-
-@keyframes textFlicker {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-#title-container > div {
-    animation: textFlicker 0.1s infinite alternate;
-    text-shadow: 
-        0 0 10px rgba(255,255,255,0.5),
-        0 0 20px rgba(255,255,255,0.3),
-        0 0 30px rgba(255,255,255,0.2);
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    #info-overlay {
-        max-width: 90%;
-        right: 5%;
-        font-size: 0.9em;
-    }
-}
-
-/* Accessibility and Print Styles */
-@media print {
-    #glCanvas, #info-overlay {
-        position: static;
-        width: 100%;
-        height: auto;
-    }
-}
-
-/* Scrollbar Styling (for any potential future scrollable elements) */
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--accent-color);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--text-primary);
-    border-radius: 5px;
-}
-
-/* Subtle Cursor Interaction */
-body {
-    cursor: none; /* Hide default cursor */
-}
-
-#glCanvas {
-    cursor: crosshair; /* Custom cursor for canvas interaction */
-}
+        .overlapping-element {
+            z-index: 10; /* Lower z-index to be behind settings */
+            position: absolute; /* Adjust positioning if necessary */
+            background-color: #f0f0f0;
+            padding: 20px;
+            border: 1px solid #999;
+            top: 50px; /* Example positioning */
+            left: 50px; /* Example positioning */
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-element">
+        <!-- Settings content here -->
+        <h2>Settings</h2>
+        <p>Modify your settings here.</p>
+    </div>
+    <div class="overlapping-element">
+        <!-- Overlapping content here -->
+        <h2>Overlapping Element</h2>
+        <p>This element should be behind the settings.</p>
+    </div>
+</body>
+</html>
