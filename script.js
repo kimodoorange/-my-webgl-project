@@ -314,6 +314,93 @@ initShaders(gl).then(program => {
                     const modes = ["organic", "mechanical", "quantum", "fractal"];
                     settings.complexityMode = modes[Math.floor(Math.random() * modes.length)];
                     updateComplexityMode(settings.complexityMode);
+                    
+                    // WebGL setup (existing code)
+// ...
+
+// Load and play drum samples
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const drumBuffers = {};
+
+async function loadDrumSamples() {
+    const drumUrls = {
+        bass: 'path/to/bass-drum.wav',
+        snare: 'path/to/snare-drum.wav',
+        ride: 'path/to/ride-cymbal.wav'
+    };
+    for (const [key, url] of Object.entries(drumUrls)) {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        drumBuffers[key] = await audioContext.decodeAudioData(arrayBuffer);
+    }
+}
+
+function playDrumSample(drum) {
+    const bufferSource = audioContext.createBufferSource();
+    bufferSource.buffer = drumBuffers[drum];
+    bufferSource.playbackRate.value = 1 + Math.random() * 0.1 - 0.05; // Slight pitch variation
+    bufferSource.connect(audioContext.destination);
+    bufferSource.start();
+}
+
+document.getElementById('bass-pad').addEventListener('click', () => playDrumSample('bass'));
+document.getElementById('snare-pad').addEventListener('click', () => playDrumSample('snare'));
+document.getElementById('ride-pad').addEventListener('click', () => playDrumSample('ride'));
+
+loadDrumSamples();
+
+// MIDI input handling
+if (navigator.requestMIDIAccess) {
+    navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+} else {
+    console.warn("WebMIDI is not supported in this browser.");
+}
+
+function onMIDISuccess(midiAccess) {
+    midiAccess.inputs.forEach(input => {
+        input.onmidimessage = getMIDIMessage;
+    });
+}
+
+function onMIDIFailure() {
+    console.warn("Could not access MIDI devices.");
+}
+
+function getMIDIMessage(midiMessage) {
+    const [command, note, velocity] = midiMessage.data;
+    if (command === 144 && velocity > 0) {
+        // Note On
+        playNoteWithModulation(note);
+    } else if (command === 128 || (command === 144 && velocity === 0)) {
+        // Note Off
+        stopNote();
+    }
+}
+
+function getMicrotonalPitch(note, cents) {
+    return note * Math.pow(2, cents / 1200);
+}
+
+function playNoteWithModulation(note) {
+    const baseFrequency = 440 * Math.pow(2, (note - 69) / 12);
+    const modulatedFrequency = getMicrotonalPitch(baseFrequency, Math.random() * 50 - 25);
+    // Use modulatedFrequency to influence WebGL shader or audio output
+    console.log('Playing note with frequency:', modulatedFrequency);
+}
+
+function stopNote() {
+    // Logic to stop the note
+}
+
+// User interaction to start audio
+document.addEventListener("click", setupAudio);
+
+async function setupAudio() {
+    await loadDrumSamples();
+    // Other audio setup logic
+}
+                    
+                    
                     break;
             }
         });
