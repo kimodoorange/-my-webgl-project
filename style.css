@@ -31,6 +31,8 @@ body, html {
     border-radius: 10px;
     max-height: 80%;
     overflow-y: auto;
+    resize: both;
+    overflow: hidden;
 }
 
 #control-header {
