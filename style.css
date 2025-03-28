@@ -32,7 +32,6 @@ body, html {
     max-height: 80%;
     overflow-y: auto;
     resize: both;
-    overflow: hidden;
 }
 
 #control-header {
