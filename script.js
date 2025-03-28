@@ -1,44 +1,102 @@
-// Simple WebGL fractal using Three.js
+// Select the canvas
+const canvas = document.getElementById("glCanvas");
+const gl = canvas.getContext("webgl");
 
-let scene, camera, renderer, mesh;
-let width = window.innerWidth;
-let height = window.innerHeight;
+// WebGL Check
+if (!gl) {
+    console.error("WebGL is not supported in this browser.");
+} else {
+    console.log("WebGL initialized successfully.");
+}
 
-function init() {
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize(width, height);
+// Set canvas size dynamically
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+gl.viewport(0, 0, canvas.width, canvas.height);
+
+// Vertex Shader
+const vertexShaderSource = `
+    attribute vec4 position;
+    void main() {
+        gl_Position = position;
+    }
+`;
+
+const fragmentShaderSource = `
+    precision mediump float;
+    uniform float time;
+    uniform vec2 resolution;
     
-    document.getElementById('webgl-canvas').appendChild(renderer.domElement);
+    void main() {
+        vec2 uv = gl_FragCoord.xy / resolution;
+        float color = 0.5 + 0.5 * sin(time + uv.x * 10.0);
+        gl_FragColor = vec4(vec3(color), 1.0);
+    }
+`;
 
-    let geometry = new THREE.SphereGeometry(5, 32, 32);
-    let material = new THREE.MeshBasicMaterial({ color: 0x44aa88 });
-    mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
-    camera.position.z = 10;
-
-    animate();
+// Function to compile shader & check errors
+function createShader(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error("Shader error:", gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
 }
 
-function animate() {
-    requestAnimationFrame(animate);
+// Create shaders
+const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
-    // Add simple rotation to the mesh
-    mesh.rotation.x += 0.01;
-    mesh.rotation.y += 0.01;
-
-    renderer.render(scene, camera);
+if (!vertexShader || !fragmentShader) {
+    console.error("Shader compilation failed.");
 }
 
-// Handle resizing of the browser window
-window.addEventListener('resize', () => {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    renderer.setSize(width, height);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-});
+// Create program
+const program = gl.createProgram();
+gl.attachShader(program, vertexShader);
+gl.attachShader(program, fragmentShader);
+gl.linkProgram(program);
 
-init();
+if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error("Shader program linking error:", gl.getProgramInfoLog(program));
+}
+
+// Set up geometry
+const positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+const positions = new Float32Array([
+    -1, -1,  // Bottom-left
+    1, -1,   // Bottom-right
+    -1,  1,  // Top-left
+    1,  1    // Top-right
+]);
+gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+// Bind attributes
+const positionAttribute = gl.getAttribLocation(program, "position");
+gl.enableVertexAttribArray(positionAttribute);
+gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0);
+
+// Set up uniforms
+const timeUniform = gl.getUniformLocation(program, "time");
+const resolutionUniform = gl.getUniformLocation(program, "resolution");
+
+// Render loop
+function render(time) {
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    
+    gl.useProgram(program);
+    gl.uniform1f(timeUniform, time * 0.001);
+    gl.uniform2f(resolutionUniform, canvas.width, canvas.height);
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    requestAnimationFrame(render);
+}
+
+// Start rendering
+requestAnimationFrame(render);
