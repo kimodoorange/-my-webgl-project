@@ -30,6 +30,7 @@ const startTextRandomization = () => {
             clearInterval(interval);
             randomTextElement.textContent = ' K I M O D O  O R A N G E';
             setInterval(changeTextColor, 500); // Continuous color changes
+            setupAudio(); // Start audio immediately after the title is displayed
         }
     }, 100);
 };
@@ -103,7 +104,7 @@ initShaders(gl).then(program => {
         document.getElementById('controls').appendChild(gui.domElement);
         Object.entries(settings).forEach(([key, value]) => {
             if (typeof value === "number") {
-                gui.add(settings, key, 0.0, 1.0).name(key.charAt(0).toUpperCase() + key.slice(1)).onChange(updateAudio);
+                gui.add(settings, key, 0.0, 1.0).name(key.charAt(0).toUpperCase() + key.slice(1)).onChange(updateAudioVisual);
             }
         });
 
@@ -128,21 +129,40 @@ initShaders(gl).then(program => {
 
         const shapeDecaySpeed = 0.002;
 
-        let audioContext;
+        let audioContext, gainNode, compressor, constantOscillator;
         let isAudioStarted = false;
 
         function setupAudio() {
             if (!isAudioStarted) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                gainNode = audioContext.createGain();
+                compressor = audioContext.createDynamicsCompressor();
+                gainNode.connect(compressor).connect(audioContext.destination);
+                
+                // Create a constant oscillator for the background tone
+                constantOscillator = audioContext.createOscillator();
+                constantOscillator.frequency.setValueAtTime(settings.pitch, audioContext.currentTime);
+                constantOscillator.connect(gainNode);
+                constantOscillator.start();
+
                 isAudioStarted = true;
                 console.log("Audio context started");
-                startTextRandomization();
             }
         }
 
-        function updateAudio() { }
-
-        document.addEventListener("click", setupAudio);
+        function updateAudioVisual() {
+            if (audioContext) {
+                gainNode.gain.setValueAtTime(settings.formFluidity, audioContext.currentTime);
+                compressor.threshold.setValueAtTime(settings.frequency * -60, audioContext.currentTime);
+                compressor.knee.setValueAtTime(settings.chromaticIntensity * 40, audioContext.currentTime);
+                compressor.ratio.setValueAtTime(settings.pitch / 880 * 20, audioContext.currentTime);
+                compressor.attack.setValueAtTime(settings.modulator * 0.1, audioContext.currentTime);
+                compressor.release.setValueAtTime((1-settings.modulator) * 0.5, audioContext.currentTime);
+                
+                // Update the constant oscillator frequency
+                constantOscillator.frequency.setValueAtTime(settings.pitch, audioContext.currentTime);
+            }
+        }
 
         function render(time) {
             gl.clear(gl.COLOR_BUFFER_BIT);
@@ -190,9 +210,9 @@ initShaders(gl).then(program => {
         }
 
         const drumSounds = {
-            bass: 'path/to/bass-drum.mp3',
-            snare: 'path/to/snare-drum.mp3',
-            ride: 'path/to/ride-cymbal.mp3'
+            bass: 'audio/bass-drum.mp3',
+            snare: 'audio/snare-drum.mp3',
+            ride: 'audio/ride-cymbal.mp3'
         };
 
         document.getElementById('bass-pad').addEventListener('click', () => playSound(drumSounds.bass));
@@ -200,13 +220,7 @@ initShaders(gl).then(program => {
         document.getElementById('ride-pad').addEventListener('click', () => playSound(drumSounds.ride));
 
         function playNote(frequency) {
-            const osc = audioContext.createOscillator();
-            osc.frequency.setValueAtTime(frequency, audioContext.currentTime);
-            const gainNodeOsc = audioContext.createGain();
-            gainNodeOsc.gain.setValueAtTime(1, audioContext.currentTime);
-            osc.connect(gainNodeOsc).connect(audioContext.destination);
-            osc.start();
-            osc.stop(audioContext.currentTime + 1);
+            constantOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
         }
 
         document.getElementById('note1').addEventListener('click', () => playNote(261.63)); // C4
@@ -216,5 +230,18 @@ initShaders(gl).then(program => {
         document.getElementById('note5').addEventListener('click', () => playNote(392.00)); // G4
         document.getElementById('note6').addEventListener('click', () => playNote(440.00)); // A4
         document.getElementById('note7').addEventListener('click', () => playNote(493.88)); // B4
+
+        document.getElementById('fullscreen-button').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        // Start the text randomization and audio setup immediately
+        startTextRandomization();
     }
 });
