@@ -3,110 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fractal Noise + Audio</title>
+    <title>Debugging WebGL</title>
     <style>
-        body { margin: 0; overflow: hidden; }
+        body { margin: 0; overflow: hidden; background: black; }
         canvas { display: block; }
     </style>
 </head>
 <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
-    <script>
-        // WebGL and 3D context setup
-        const canvas = document.createElement('canvas');
-        document.body.appendChild(canvas);
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        
-        // Ensure WebGL context is supported
-        if (!gl) {
-            alert('WebGL not supported!');
-        }
-
-        // Web Audio API setup
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        let gainNode = audioContext.createGain();
-        let noiseSource;
-        let lowPassFilter;
-
-        // Function to create white noise
-        function createNoiseSource() {
-            const bufferSize = 2 * audioContext.sampleRate; // 2 seconds of noise
-            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-            const output = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = Math.random() * 2 - 1; // White noise: values between -1 and 1
-            }
-
-            noiseSource = audioContext.createBufferSource();
-            noiseSource.buffer = buffer;
-            noiseSource.loop = true; // Loop the noise
-            noiseSource.start();
-            return noiseSource;
-        }
-
-        // Low pass filter to manipulate noise frequency
-        function createFilter() {
-            lowPassFilter = audioContext.createBiquadFilter();
-            lowPassFilter.type = "lowpass";
-            lowPassFilter.frequency.setValueAtTime(500, audioContext.currentTime); // Low pass at 500Hz
-            return lowPassFilter;
-        }
-
-        // Resume Audio Context on user interaction
-        window.addEventListener('click', function() {
-            audioContext.resume().then(() => {
-                console.log('Audio context resumed');
-                if (!noiseSource) {
-                    noiseSource = createNoiseSource();
-                    const filter = createFilter();
-                    noiseSource.connect(filter);
-                    filter.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-                }
-            });
-        });
-
-        // Create the 3D scene using WebGL (simple fractal-like animation)
-        let time = 0;
-        function render() {
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            // Simple fractal-like noise rendering logic
-            time += 0.01;
-
-            // Add rendering code here for the fractal or noise pattern you want to visualize
-
-            requestAnimationFrame(render);
-        }
-
-        // Initialize WebGL rendering
-        function init() {
-            gl.clearColor(0, 0, 0, 1);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            render();
-        }
-
-        init();
-
-        // GUI settings
-        const gui = new dat.GUI();
-        const params = {
-            audioNoiseVolume: 0.5,
-            lowPassFreq: 500,
-            noiseSpeed: 1
-        };
-
-        gui.add(params, 'audioNoiseVolume', 0, 1).onChange(function(value) {
-            gainNode.gain.setValueAtTime(value, audioContext.currentTime);
-        });
-
-        gui.add(params, 'lowPassFreq', 20, 2000).onChange(function(value) {
-            lowPassFilter.frequency.setValueAtTime(value, audioContext.currentTime);
-        });
-
-        gui.add(params, 'noiseSpeed', 0, 5).onChange(function(value) {
-            // Modify the noise speed or fractal generation speed here
-        });
-
-    </script>
+    <canvas id="glCanvas"></canvas>
+    <script src="script.js"></script>
 </body>
 </html>
