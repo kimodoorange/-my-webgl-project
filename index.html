@@ -3,105 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic 3D Scene</title>
+    <title>Dynamic Noise and Fractals</title>
     <style>
-        body { margin: 0; }
+        body { margin: 0; overflow: hidden; }
         canvas { display: block; }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
 </head>
 <body>
-    <div id="webgl-canvas"></div>
-    
-    <script>
-        let scene, camera, renderer, mesh;
-        let width = window.innerWidth;
-        let height = window.innerHeight;
 
-        // Parameters object to control via GUI
-        let parameters = {
-            rotationSpeed: 3.14,
-            color: 0x44aa88,
-            shape: 'sphere', // shape options: sphere, torus, cube
-            size: 5
-        };
+<!-- Include Three.js and dat.GUI -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
 
-        // Initialize scene
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer();
-            renderer.setSize(width, height);
-            document.getElementById('webgl-canvas').appendChild(renderer.domElement);
+<script>
+    // 1. Set up Three.js scene, camera, and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-            // Create geometry based on selected shape
-            createGeometry();
+    // 2. Create a basic cube mesh
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
 
-            camera.position.z = 10;
+    // 3. Set up the clock and animation loop
+    const clock = new THREE.Clock();
 
-            // Initialize GUI
-            let gui = new dat.GUI();
-            gui.add(parameters, 'rotationSpeed', 0, 0.1);
-            gui.addColor(parameters, 'color').onChange(function(value) {
-                mesh.material.color.set(value);
-            });
-            gui.add(parameters, 'shape', ['sphere', 'torus', 'cube']).onChange(function(value) {
-                createGeometry(); // Recreate geometry when shape changes
-            });
-            gui.add(parameters, 'size', 1, 10).onChange(function(value) {
-                createGeometry(); // Recreate geometry when size changes
-            });
+    // 4. Set up the audio context and noise generator
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-            animate();
+    function createNoiseSource() {
+        const bufferSize = 2 * audioContext.sampleRate; // 2 seconds of noise
+        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const output = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1; // White noise: values between -1 and 1
         }
 
-        // Create geometry based on selected shape and size
-        function createGeometry() {
-            if (mesh) {
-                scene.remove(mesh); // Remove old mesh
-            }
+        const noise = audioContext.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true; // Loop the noise
+        noise.start();
+        return noise;
+    }
 
-            let geometry;
-            switch (parameters.shape) {
-                case 'sphere':
-                    geometry = new THREE.SphereGeometry(parameters.size, 32, 32);
-                    break;
-                case 'torus':
-                    geometry = new THREE.TorusGeometry(parameters.size, 2, 16, 100);
-                    break;
-                case 'cube':
-                    geometry = new THREE.BoxGeometry(parameters.size, parameters.size, parameters.size);
-                    break;
-            }
+    function createFilter() {
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(500, audioContext.currentTime); // Control low-pass filter cutoff
+        return filter;
+    }
 
-            let material = new THREE.MeshBasicMaterial({ color: parameters.color });
-            mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
-        }
+    const noiseSource = createNoiseSource();
+    const lowPassFilter = createFilter();
+    noiseSource.connect(lowPassFilter);
+    lowPassFilter.connect(audioContext.destination);
 
-        // Animation loop
-        function animate() {
-            requestAnimationFrame(animate);
+    // 5. Create Perlin noise generator
+    function perlinNoise(x, y, z) {
+        return (Math.sin(x + y + z) * 0.5 + 0.5); // Simple noise pattern for example
+    }
 
-            // Apply the rotation speed from GUI
-            mesh.rotation.x += parameters.rotationSpeed;
-            mesh.rotation.y += parameters.rotationSpeed;
+    // 6. GUI parameters and settings
+    const parameters = {
+        visualNoiseSpeed: 1.0,
+        visualNoiseAmplitude: 2.0,
+        audioNoiseVolume: 0.5,
+        audioFilterCutoff: 500,
+    };
 
-            renderer.render(scene, camera);
-        }
+    const gui = new dat.GUI();
+    gui.add(parameters, 'visualNoiseSpeed', 0, 5).name('Visual Speed');
+    gui.add(parameters, 'visualNoiseAmplitude', 0, 10).name('Visual Amplitude');
+    gui.add(parameters, 'audioNoiseVolume', 0, 1).name('Audio Volume');
+    gui.add(parameters, 'audioFilterCutoff', 100, 5000).name('Audio Filter Cutoff');
 
-        // Handle resizing of the window
-        window.addEventListener('resize', () => {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            renderer.setSize(width, height);
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-        });
+    // 7. Update the noise and form for both visual and audio in each frame
+    function applyNoiseToAudioAndVisual() {
+        let time = clock.elapsedTime;
 
-        // Initialize the scene and GUI
-        init();
-    </script>
+        // Apply Perlin noise to the mesh position and rotation (Visual)
+        mesh.position.x = perlinNoise(time, mesh.position.x, 0) * parameters.visualNoiseAmplitude;
+        mesh.position.y = perlinNoise(time, mesh.position.y, 1) * parameters.visualNoiseAmplitude;
+        mesh.position.z = perlinNoise(time, mesh.position.z, 2) * parameters.visualNoiseAmplitude;
+        
+        mesh.rotation.x += parameters.visualNoiseSpeed * Math.sin(time);
+        mesh.rotation.y += parameters.visualNoiseSpeed * Math.cos(time);
+
+        // Update audio settings based on GUI values (Audio)
+        lowPassFilter.frequency.setValueAtTime(parameters.audioFilterCutoff, audioContext.currentTime);
+        const gainNode = audioContext.createGain();
+        gainNode.gain.setValueAtTime(parameters.audioNoiseVolume, audioContext.currentTime);
+        noiseSource.connect(gainNode);
+        gainNode.connect(lowPassFilter);
+    }
+
+    // 8. Handle window resize
+    window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+    });
+
+    // 9. Animation Loop
+    function animate() {
+        requestAnimationFrame(animate);
+
+        applyNoiseToAudioAndVisual();
+
+        // Render the scene
+        renderer.render(scene, camera);
+    }
+
+    camera.position.z = 5;
+    animate();
+</script>
+
 </body>
 </html>
