@@ -3,124 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Noise and Fractals</title>
+    <title>Fractal Noise + Audio</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
     </style>
 </head>
 <body>
-
-<!-- Include Three.js and dat.GUI -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
-
-<script>
-    // 1. Set up Three.js scene, camera, and renderer
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    // 2. Create a basic cube mesh
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
-    // 3. Set up the clock and animation loop
-    const clock = new THREE.Clock();
-
-    // 4. Set up the audio context and noise generator
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-    function createNoiseSource() {
-        const bufferSize = 2 * audioContext.sampleRate; // 2 seconds of noise
-        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-        const output = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            output[i] = Math.random() * 2 - 1; // White noise: values between -1 and 1
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+    <script>
+        // WebGL and 3D context setup
+        const canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        
+        // Ensure WebGL context is supported
+        if (!gl) {
+            alert('WebGL not supported!');
         }
 
-        const noise = audioContext.createBufferSource();
-        noise.buffer = buffer;
-        noise.loop = true; // Loop the noise
-        noise.start();
-        return noise;
-    }
+        // Web Audio API setup
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let gainNode = audioContext.createGain();
+        let noiseSource;
+        let lowPassFilter;
 
-    function createFilter() {
-        const filter = audioContext.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(500, audioContext.currentTime); // Control low-pass filter cutoff
-        return filter;
-    }
+        // Function to create white noise
+        function createNoiseSource() {
+            const bufferSize = 2 * audioContext.sampleRate; // 2 seconds of noise
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const output = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1; // White noise: values between -1 and 1
+            }
 
-    const noiseSource = createNoiseSource();
-    const lowPassFilter = createFilter();
-    noiseSource.connect(lowPassFilter);
-    lowPassFilter.connect(audioContext.destination);
+            noiseSource = audioContext.createBufferSource();
+            noiseSource.buffer = buffer;
+            noiseSource.loop = true; // Loop the noise
+            noiseSource.start();
+            return noiseSource;
+        }
 
-    // 5. Create Perlin noise generator
-    function perlinNoise(x, y, z) {
-        return (Math.sin(x + y + z) * 0.5 + 0.5); // Simple noise pattern for example
-    }
+        // Low pass filter to manipulate noise frequency
+        function createFilter() {
+            lowPassFilter = audioContext.createBiquadFilter();
+            lowPassFilter.type = "lowpass";
+            lowPassFilter.frequency.setValueAtTime(500, audioContext.currentTime); // Low pass at 500Hz
+            return lowPassFilter;
+        }
 
-    // 6. GUI parameters and settings
-    const parameters = {
-        visualNoiseSpeed: 1.0,
-        visualNoiseAmplitude: 2.0,
-        audioNoiseVolume: 0.5,
-        audioFilterCutoff: 500,
-    };
+        // Resume Audio Context on user interaction
+        window.addEventListener('click', function() {
+            audioContext.resume().then(() => {
+                console.log('Audio context resumed');
+                if (!noiseSource) {
+                    noiseSource = createNoiseSource();
+                    const filter = createFilter();
+                    noiseSource.connect(filter);
+                    filter.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                }
+            });
+        });
 
-    const gui = new dat.GUI();
-    gui.add(parameters, 'visualNoiseSpeed', 0, 5).name('Visual Speed');
-    gui.add(parameters, 'visualNoiseAmplitude', 0, 10).name('Visual Amplitude');
-    gui.add(parameters, 'audioNoiseVolume', 0, 1).name('Audio Volume');
-    gui.add(parameters, 'audioFilterCutoff', 100, 5000).name('Audio Filter Cutoff');
+        // Create the 3D scene using WebGL (simple fractal-like animation)
+        let time = 0;
+        function render() {
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            // Simple fractal-like noise rendering logic
+            time += 0.01;
 
-    // 7. Update the noise and form for both visual and audio in each frame
-    function applyNoiseToAudioAndVisual() {
-        let time = clock.elapsedTime;
+            // Add rendering code here for the fractal or noise pattern you want to visualize
 
-        // Apply Perlin noise to the mesh position and rotation (Visual)
-        mesh.position.x = perlinNoise(time, mesh.position.x, 0) * parameters.visualNoiseAmplitude;
-        mesh.position.y = perlinNoise(time, mesh.position.y, 1) * parameters.visualNoiseAmplitude;
-        mesh.position.z = perlinNoise(time, mesh.position.z, 2) * parameters.visualNoiseAmplitude;
-        
-        mesh.rotation.x += parameters.visualNoiseSpeed * Math.sin(time);
-        mesh.rotation.y += parameters.visualNoiseSpeed * Math.cos(time);
+            requestAnimationFrame(render);
+        }
 
-        // Update audio settings based on GUI values (Audio)
-        lowPassFilter.frequency.setValueAtTime(parameters.audioFilterCutoff, audioContext.currentTime);
-        const gainNode = audioContext.createGain();
-        gainNode.gain.setValueAtTime(parameters.audioNoiseVolume, audioContext.currentTime);
-        noiseSource.connect(gainNode);
-        gainNode.connect(lowPassFilter);
-    }
+        // Initialize WebGL rendering
+        function init() {
+            gl.clearColor(0, 0, 0, 1);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            render();
+        }
 
-    // 8. Handle window resize
-    window.addEventListener('resize', () => {
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-    });
+        init();
 
-    // 9. Animation Loop
-    function animate() {
-        requestAnimationFrame(animate);
+        // GUI settings
+        const gui = new dat.GUI();
+        const params = {
+            audioNoiseVolume: 0.5,
+            lowPassFreq: 500,
+            noiseSpeed: 1
+        };
 
-        applyNoiseToAudioAndVisual();
+        gui.add(params, 'audioNoiseVolume', 0, 1).onChange(function(value) {
+            gainNode.gain.setValueAtTime(value, audioContext.currentTime);
+        });
 
-        // Render the scene
-        renderer.render(scene, camera);
-    }
+        gui.add(params, 'lowPassFreq', 20, 2000).onChange(function(value) {
+            lowPassFilter.frequency.setValueAtTime(value, audioContext.currentTime);
+        });
 
-    camera.position.z = 5;
-    animate();
-</script>
+        gui.add(params, 'noiseSpeed', 0, 5).onChange(function(value) {
+            // Modify the noise speed or fractal generation speed here
+        });
 
+    </script>
 </body>
 </html>
