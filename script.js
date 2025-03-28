@@ -78,7 +78,7 @@ const initShaders = async gl => {
 
 const positionBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-0.85, -0.85, 0.85, -0.85, -0.85, 0.85, 0.85, 0.85]), gl.STATIC_DRAW); // Scaled down by 15%
 
 initShaders(gl).then(program => {
     if (program) {
@@ -108,7 +108,7 @@ initShaders(gl).then(program => {
             }
         });
 
-        const shapeDecaySpeed = 0.002;
+        const shapeDecaySpeed = 0.01; // Increased speed
 
         let audioContext, gainNode, compressor, constantOscillator;
         let isAudioStarted = false;
