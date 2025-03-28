@@ -369,6 +369,46 @@ document.addEventListener('keydown', (event) => {
             updateComplexityMode(settings.complexityMode);
             break;
     }
+    // Get the canvas and toggle elements
+const canvas = document.getElementById('webglCanvas');
+const accelerationToggle = document.getElementById('accelerationToggle');
+
+// Variable to store the toggle state
+let accelerateInterference = false;
+
+// Listen for changes on the toggle button
+accelerationToggle.addEventListener('change', (event) => {
+    accelerateInterference = event.target.checked;
+});
+
+// Function to handle touch events and adjust shape interference
+function handleTouchEvent(event) {
+    if (accelerateInterference) {
+        // Increase the shape interference
+        accelerateShapeInterference();
+    } else {
+        // Normal shape interference
+        normalShapeInterference();
+    }
+}
+
+// Function to increase shape interference
+function accelerateShapeInterference() {
+    // Your logic to accelerate shape interference
+    console.log('Accelerating shape interference');
+}
+
+// Function for normal shape interference
+function normalShapeInterference() {
+    // Your logic for normal shape interference
+    console.log('Normal shape interference');
+}
+
+// Add event listeners for touch events
+canvas.addEventListener('touchstart', handleTouchEvent);
+canvas.addEventListener('touchmove', handleTouchEvent);
+canvas.addEventListener('touchend', handleTouchEvent);
+    
 });
     requestAnimationFrame(render);
 }
