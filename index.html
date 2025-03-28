@@ -4,32 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chromatic Fractal Noise Generator</title>
-    
+
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
-    
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="style.css">
-    
+
     <!-- Google Font for enhanced typography -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Main Canvas -->
     <canvas id="glCanvas"></canvas>
-    
+
     <!-- Information Overlay -->
     <div id="info-overlay">
         <h3>Chromatic Fractal Noise Generator</h3>
-        <p>Explore the boundaries of visual and audio complexity through interactive noise generation.</p>
+        <p>Explore the boundaries of visual and audio complexity through interactive</p>
     </div>
-    
+
     <!-- Interaction Hint -->
     <div id="interaction-hint">
         Click to start audio / Interact with controls
     </div>
-    
+
+    <!-- Toggle Button for Accelerating Shape Interference -->
+    <label for="accelerationToggle">Accelerate Shape Interference</label>
+    <input type="checkbox" id="accelerationToggle">
+
     <!-- Main Script -->
     <script src="script.js"></script>
-</body>
-</html>
+
+    <!-- Script to Handle the Toggle Button -->
+    <script>
+        // Get the canvas and toggle elements
+        const canvas = document.getElementById('glCanvas');
+        const accelerationToggle = document.getElementById('accelerationToggle');
+
+        // Variable to store the toggle state
+        let accelerateInterference = false;
+
+        // Listen for changes on the toggle button
+        accelerationToggle.addEventListener('change', (event) => {
+            accelerateInterference = event.target.checked;
+        });
+
+        // Function to handle touch events and adjust shape interference
+        function handleTouchEvent(event) {
+            if (accelerateInterference) {
+                // Increase the shape interference
+                accelerateShapeInterference();
+            } else {
+                // Normal shape interference
+                normalShapeInterference();
+            }
+        }
+
+        // Function to increase shape interference
+        function accelerateShapeInterference() {
+            //
