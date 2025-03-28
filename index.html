@@ -3,43 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebGL Project</title>
+    <title>Dynamic Noise and Fractals</title>
     <style>
-        /* Example styles for your project */
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        .settings-element {
-            z-index: 1000; /* Ensure this is higher than the overlapping element */
-            position: relative; /* Ensure the element is positioned */
-            background-color: #fff;
-            padding: 20px;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .overlapping-element {
-            z-index: 10; /* Lower z-index to be behind settings */
-            position: absolute; /* Adjust positioning if necessary */
-            background-color: #f0f0f0;
-            padding: 20px;
-            border: 1px solid #999;
-            top: 50px; /* Example positioning */
-            left: 50px; /* Example positioning */
-        }
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
     </style>
 </head>
 <body>
-    <div class="settings-element">
-        <!-- Settings content here -->
-        <h2>Settings</h2>
-        <p>Modify your settings here.</p>
-    </div>
-    <div class="overlapping-element">
-        <!-- Overlapping content here -->
-        <h2>Overlapping Element</h2>
-        <p>This element should be behind the settings.</p>
-    </div>
+
+<!-- Include Three.js and dat.GUI -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+
+<script>
+    // 1. Set up Three.js scene, camera, and renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // 2. Create a basic cube mesh
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    // 3. Set up the clock and animation loop
+    const clock = new THREE.Clock();
+
+    // 4. Set up the audio context and noise generator
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    function createNoiseSource() {
+        const bufferSize = 2 * audioContext.sampleRate; // 2 seconds of noise
+        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const output = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1; // White noise: values between -1 and 1
+        }
+
+        const noise = audioContext.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true; // Loop the noise
+        noise.start();
+        return noise;
+    }
+
+    function createFilter() {
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(500, audioContext.currentTime); // Control low-pass filter cutoff
+        return filter;
+    }
+
+    const noiseSource = createNoiseSource();
+    const lowPassFilter = createFilter();
+    noiseSource.connect(lowPassFilter);
+    lowPassFilter.connect(audioContext.destination);
+
+    // 5. Create Perlin noise generator
+    function perlinNoise(x, y, z) {
+        return (Math.sin(x + y + z) * 0.5 + 0.5); // Simple noise pattern for example
+    }
+
+    // 6. GUI parameters and settings
+    const parameters = {
+        visualNoiseSpeed: 1.0,
+        visualNoiseAmplitude: 2.0,
+        audioNoiseVolume: 0.5,
+        audioFilterCutoff: 500,
+    };
+
+    const gui = new dat.GUI();
+    gui.add(parameters, 'visualNoiseSpeed', 0, 5).name('Visual Speed');
+    gui.add(parameters, 'visualNoiseAmplitude', 0, 10).name('Visual Amplitude');
+    gui.add(parameters, 'audioNoiseVolume', 0, 1).name('Audio Volume');
+    gui.add(parameters, 'audioFilterCutoff', 100, 5000).name('Audio Filter Cutoff');
+
+    // 7. Update the noise and form for both visual and audio in each frame
+    function applyNoiseToAudioAndVisual() {
+        let time = clock.elapsedTime;
+
+        // Apply Perlin noise to the mesh position and rotation (Visual)
+        mesh.position.x = perlinNoise(time, mesh.position.x, 0) * parameters.visualNoiseAmplitude;
+        mesh.position.y = perlinNoise(time, mesh.position.y, 1) * parameters.visualNoiseAmplitude;
+        mesh.position.z = perlinNoise(time, mesh.position.z, 2) * parameters.visualNoiseAmplitude;
+        
+        mesh.rotation.x += parameters.visualNoiseSpeed * Math.sin(time);
+        mesh.rotation.y += parameters.visualNoiseSpeed * Math.cos(time);
+
+        // Update audio settings based on GUI values (Audio)
+        lowPassFilter.frequency.setValueAtTime(parameters.audioFilterCutoff, audioContext.currentTime);
+        const gainNode = audioContext.createGain();
+        gainNode.gain.setValueAtTime(parameters.audioNoiseVolume, audioContext.currentTime);
+        noiseSource.connect(gainNode);
+        gainNode.connect(lowPassFilter);
+    }
+
+    // 8. Handle window resize
+    window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+    });
+
+    // 9. Animation Loop
+    function animate() {
+        requestAnimationFrame(animate);
+
+        applyNoiseToAudioAndVisual();
+
+        // Render the scene
+        renderer.render(scene, camera);
+    }
+
+    camera.position.z = 5;
+    animate();
+</script>
+
 </body>
 </html>
