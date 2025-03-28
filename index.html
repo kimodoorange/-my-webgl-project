@@ -13,6 +13,32 @@
 
     <!-- Google Font for enhanced typography -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        #controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        #control-header {
+            cursor: move;
+            background: #333;
+            color: #fff;
+            padding: 5px;
+            font-weight: bold;
+        }
+
+        #text-overlay span {
+            font-family: 'Space Grotesk', sans-serif;
+            color: #fff;
+            text-shadow: 0 0 10px #00ccff, 0 0 20px #00ccff, 0 0 30px #00ccff, 0 0 40px #00ccff;
+        }
+    </style>
 </head>
 <body>
     <!-- Main Canvas -->
@@ -30,12 +56,13 @@
     </div>
 
     <!-- Text Overlay -->
-    <div id="text-overlay" style="position: absolute; top: 10px; width: 100%; text-align: center; font-size: 24px; font-family: 'Space Grotesk', sans-serif; display: none;">
+    <div id="text-overlay" style="position: absolute; top: 10px; width: 100%; text-align: center; font-size: 24px; display: none;">
         <span id="random-text"></span>
     </div>
 
-    <!-- Additional Sliders and Toggles -->
+    <!-- Control Dialog Box -->
     <div id="controls">
+        <div id="control-header">Controls</div>
         <label for="complexitySlider">Complexity</label>
         <input type="range" id="complexitySlider" min="0" max="1" step="0.01" value="0.5">
         <label for="fluiditySlider">Fluidity</label>
@@ -53,6 +80,7 @@
         <input type="range" id="fluidViscositySlider" min="0.1" max="10.0" step="0.1" value="1.0">
         <label for="pitchSlider">Chromatic Pitch</label>
         <input type="range" id="pitchSlider" min="440" max="1760" step="1" value="880">
+        <button id="minimize-button">Minimize</button>
     </div>
 
     <!-- Note Buttons -->
@@ -64,13 +92,6 @@
         <button id="note5">Note 5</button>
         <button id="note6">Note 6</button>
         <button id="note7">Note 7</button>
-    </div>
-
-    <!-- Drum Pad -->
-    <div id="drum-pad">
-        <button id="bass-pad">Bass Drum</button>
-        <button id="snare-pad">Snare Drum</button>
-        <button id="ride-pad">Ride Cymbal</button>
     </div>
 
     <script src="script.js"></script>
