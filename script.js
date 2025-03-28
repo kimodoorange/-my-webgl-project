@@ -190,87 +190,22 @@ initShaders(gl).then(program => {
 
         // Audio Setup
         let audioContext;
-        let gainNode;
-        let noiseNode;
-        let oscNode;
         let isAudioStarted = false;
 
         function setupAudio() {
             if (!isAudioStarted) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                gainNode = audioContext.createGain();
-                gainNode.gain.value = settings.noiseVolume;
-
-                const bufferSize = 4096;
-                noiseNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
-                noiseNode.onaudioprocess = generateChromaNoise;
-
-                oscNode = audioContext.createOscillator();
-                oscNode.frequency.setValueAtTime(settings.pitch, audioContext.currentTime);
-                oscNode.connect(gainNode);
-
-                noiseNode.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                oscNode.start();
-
                 isAudioStarted = true;
 
-                console.log("Chromatic Audio Noise Started");
+                console.log("Audio context started");
                 startTextRandomization(); // Start text randomization on first touch
             }
         }
 
-        // Enhanced Noise Generation with Chromatic Audio
-        function generateChromaNoise(event) {
-            let output = event.outputBuffer.getChannelData(0);
-            const complexityFactor = getComplexityMultiplier();
-
-            for (let i = 0; i < output.length; i++) {
-                let baseNoise = 0;
-
-                // Noise generation with complexity modulation
-                switch(settings.noiseType) {
-                    case "white":
-                        baseNoise = Math.random() * 2 - 1;
-                        break;
-                    case "pink":
-                        let white = Math.random() * 2 - 1;
-                        baseNoise = (white * complexityFactor) * 0.5;
-                        break;
-                    case "brown":
-                        let brownNoise = Math.random() * 2 - 1;
-                        baseNoise = brownNoise * (1 + settings.formFluidity);
-                        break;
-                }
-
-                // Apply chromatic intensity and complexity
-                output[i] = baseNoise * (1 + settings.chromaticIntensity);
-            }
-        }
-
-        // Complexity Multiplier for Dynamic Audio Generation
-        function getComplexityMultiplier() {
-            switch(settings.complexityMode) {
-                case "organic": return 1.5;
-                case "mechanical": return 1.0;
-                case "quantum": return 2.0;
-                case "fractal": return 1.75;
-                default: return 1.0;
-            }
-        }
-
         // Update Audio Parameters
-        function updateAudio() {
-            if (gainNode) {
-                gainNode.gain.value = settings.noiseVolume;
-            }
-        }
+        function updateAudio() {}
 
-        function updatePitch(pitch) {
-            if (oscNode) {
-                oscNode.frequency.setValueAtTime(pitch, audioContext.currentTime);
-            }
-        }
+        function updatePitch(pitch) {}
 
         // User interaction required to start audio
         document.addEventListener("click", setupAudio);
@@ -384,4 +319,41 @@ initShaders(gl).then(program => {
         // Add event listeners for note buttons
         document.getElementById('note1').addEventListener('click', () => playNoteWithPitchShift(0));
         document.getElementById('note2').addEventListener('click', () => playNoteWithPitchShift(1));
-        document.getElementById
+        document.getElementById('note3').addEventListener('click', () => playNoteWithPitchShift(2));
+        document.getElementById('note4').addEventListener('click', () => playNoteWithPitchShift(3));
+        document.getElementById('note5').addEventListener('click', () => playNoteWithPitchShift(4));
+        document.getElementById('note6').addEventListener('click', () => playNoteWithPitchShift(5));
+        document.getElementById('note7').addEventListener('click', () => playNoteWithPitchShift(6));
+
+        // Function to play drum sound with pitch shifting
+        function playDrumSound(buffer) {
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.playbackRate.value = settings.pitchShift;
+            source.connect(audioContext.destination);
+            source.start();
+        }
+
+        // Load and play drum samples
+        const drumBuffers = {};
+
+        async function loadDrumSamples() {
+            const drumUrls = {
+                bass: 'path/to/8bit-bass-drum.wav',
+                snare: 'path/to/8bit-snare-drum.wav',
+                ride: 'path/to/8bit-ride-cymbal.wav'
+            };
+            for (const [key, url] of Object.entries(drumUrls)) {
+                const response = await fetch(url);
+                const arrayBuffer = await response.arrayBuffer();
+                drumBuffers[key] = await audioContext.decodeAudioData(arrayBuffer);
+            }
+        }
+
+        document.getElementById('bass-pad').addEventListener('click', () => playDrumSound(drumBuffers.bass));
+        document.getElementById('snare-pad').addEventListener('click', () => playDrumSound(drumBuffers.snare));
+        document.getElementById('ride-pad').addEventListener('click', () => playDrumSound(drumBuffers.ride));
+
+        loadDrumSamples();
+    }
+});
