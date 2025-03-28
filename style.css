@@ -33,21 +33,76 @@
     <label for="accelerationToggle">Accelerate Shape Interference</label>
     <input type="checkbox" id="accelerationToggle">
 
+    <!-- Additional Sliders and Toggles -->
+    <div id="controls">
+        <label for="complexitySlider">Complexity</label>
+        <input type="range" id="complexitySlider" min="0" max="1" step="0.01" value="0.5">
+        <label for="fluiditySlider">Fluidity</label>
+        <input type="range" id="fluiditySlider" min="0" max="1" step="0.01" value="0.5">
+        <label for="dimensionalitySlider">Dimensionality</label>
+        <input type="range" id="dimensionalitySlider" min="2" max="5" step="1" value="3">
+        <label for="functionType">Function Type</label>
+        <select id="functionType">
+            <option value="sine">Sine</option>
+            <option value="cosine">Cosine</option>
+            <option value="tangent">Tangent</option>
+            <option value="exponential">Exponential</option>
+        </select>
+        <label for="fluidViscositySlider">Fluid Viscosity</label>
+        <input type="range" id="fluidViscositySlider" min="0.1" max="10.0" step="0.1" value="1.0">
+    </div>
+
     <!-- Main Script -->
     <script src="script.js"></script>
 
-    <!-- Script to Handle the Toggle Button -->
+    <!-- Script to Handle the Controls -->
     <script>
-        // Get the canvas and toggle elements
+        // Get the canvas and control elements
         const canvas = document.getElementById('glCanvas');
         const accelerationToggle = document.getElementById('accelerationToggle');
+        const complexitySlider = document.getElementById('complexitySlider');
+        const fluiditySlider = document.getElementById('fluiditySlider');
+        const dimensionalitySlider = document.getElementById('dimensionalitySlider');
+        const functionType = document.getElementById('functionType');
+        const fluidViscositySlider = document.getElementById('fluidViscositySlider');
 
-        // Variable to store the toggle state
+        // Variables to store the toggle state and slider values
         let accelerateInterference = false;
+        let complexity = parseFloat(complexitySlider.value);
+        let fluidity = parseFloat(fluiditySlider.value);
+        let dimensionality = parseInt(dimensionalitySlider.value);
+        let selectedFunctionType = functionType.value;
+        let fluidViscosity = parseFloat(fluidViscositySlider.value);
 
         // Listen for changes on the toggle button
         accelerationToggle.addEventListener('change', (event) => {
             accelerateInterference = event.target.checked;
+        });
+
+        // Listen for changes on the sliders
+        complexitySlider.addEventListener('input', (event) => {
+            complexity = parseFloat(event.target.value);
+            updateComplexity(complexity);
+        });
+
+        fluiditySlider.addEventListener('input', (event) => {
+            fluidity = parseFloat(event.target.value);
+            updateFluidity(fluidity);
+        });
+
+        dimensionalitySlider.addEventListener('input', (event) => {
+            dimensionality = parseInt(event.target.value);
+            updateDimensionality(dimensionality);
+        });
+
+        functionType.addEventListener('change', (event) => {
+            selectedFunctionType = event.target.value;
+            updateFunctionType(selectedFunctionType);
+        });
+
+        fluidViscositySlider.addEventListener('input', (event) => {
+            fluidViscosity = parseFloat(event.target.value);
+            updateFluidViscosity(fluidViscosity);
         });
 
         // Function to handle touch events and adjust shape interference
@@ -63,14 +118,40 @@
 
         // Function to increase shape interference
         function accelerateShapeInterference() {
-            // Your logic to accelerate shape interference
-            console.log('Accelerating shape interference');
+            // Logic to accelerate shape interference
+            console.log('Accelerating shape interference', complexity, fluidity, dimensionality, selectedFunctionType, fluidViscosity);
         }
 
         // Function for normal shape interference
         function normalShapeInterference() {
-            // Your logic for normal shape interference
-            console.log('Normal shape interference');
+            // Logic for normal shape interference
+            console.log('Normal shape interference', complexity, fluidity, dimensionality, selectedFunctionType, fluidViscosity);
+        }
+
+        // Functions to update new settings
+        function updateComplexity(value) {
+            console.log('Updating complexity to', value);
+            // Logic to update complexity in WebGL context
+        }
+
+        function updateFluidity(value) {
+            console.log('Updating fluidity to', value);
+            // Logic to update fluidity in WebGL context
+        }
+
+        function updateDimensionality(value) {
+            console.log('Updating dimensionality to', value);
+            // Logic to update dimensionality in WebGL context
+        }
+
+        function updateFunctionType(value) {
+            console.log('Updating function type to', value);
+            // Logic to update function type in WebGL context
+        }
+
+        function updateFluidViscosity(value) {
+            console.log('Updating fluid viscosity to', value);
+            // Logic to update fluid viscosity in WebGL context
         }
 
         // Add event listeners for touch events
