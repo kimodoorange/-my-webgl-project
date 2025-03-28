@@ -1,78 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chromatic Fractal Noise Generator</title>
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Space Grotesk', sans-serif;
+}
 
-    <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+#glCanvas {
+    display: block;
+}
 
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="style.css">
+#info-overlay, #interaction-hint {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+}
 
-    <!-- Google Font for enhanced typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <!-- Main Canvas -->
-    <canvas id="glCanvas"></canvas>
+#info-overlay {
+    top: 20px;
+    left: 20px;
+}
 
-    <!-- Information Overlay -->
-    <div id="info-overlay">
-        <h3>Chromatic Fractal Noise Generator</h3>
-        <p>Explore the boundaries of visual and audio complexity through interactive</p>
-    </div>
+#interaction-hint {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
 
-    <!-- Interaction Hint -->
-    <div id="interaction-hint">
-        Click to start audio / Interact with controls
-    </div>
+#text-overlay {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(0, 204, 255, 0.8), 0 0 20px rgba(0, 204, 255, 0.8), 0 0 30px rgba(0, 204, 255, 0.8), 0 0 40px rgba(0, 204, 255, 0.8);
+}
 
-    <!-- Text Overlay -->
-    <div id="text-overlay" style="position: absolute; top: 10px; width: 100%; text-align: center; font-size: 24px; font-family: 'Space Grotesk', sans-serif; display: none;">
-        <span id="random-text"></span>
-    </div>
+#note-controls, #drum-pad {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+}
 
-    <!-- Additional Sliders and Toggles -->
-    <div id="controls">
-        <label for="complexitySlider">Complexity</label>
-        <input type="range" id="complexitySlider" min="0" max="1" step="0.01" value="0.5">
-        <label for="fluiditySlider">Fluidity</label>
-        <input type="range" id="fluiditySlider" min="0" max="1" step="0.01" value="0.5">
-        <label for="dimensionalitySlider">Dimensionality</label>
-        <input type="range" id="dimensionalitySlider" min="2" max="5" step="1" value="3">
-        <label for="functionType">Function Type</label>
-        <select id="functionType">
-            <option value="sine">Sine</option>
-            <option value="cosine">Cosine</option>
-            <option value="tangent">Tangent</option>
-            <option value="exponential">Exponential</option>
-        </select>
-        <label for="fluidViscositySlider">Fluid Viscosity</label>
-        <input type="range" id="fluidViscositySlider" min="0.1" max="10.0" step="0.1" value="1.0">
-        <label for="pitchSlider">Chromatic Pitch</label>
-        <input type="range" id="pitchSlider" min="440" max="1760" step="1" value="880">
-    </div>
+#drum-pad {
+    bottom: 50px;
+}
 
-    <!-- Note Buttons -->
-    <div id="note-controls">
-        <button id="note1">Note 1</button>
-        <button id="note2">Note 2</button>
-        <button id="note3">Note 3</button>
-        <button id="note4">Note 4</button>
-        <button id="note5">Note 5</button>
-        <button id="note6">Note 6</button>
-        <button id="note7">Note 7</button>
-    </div>
+#note-controls button, #drum-pad button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-    <!-- Drum Pad -->
-    <div id="drum-pad">
-        <button id="bass-pad">Bass Drum</button>
-        <button id="snare-pad">Snare Drum</button>
-        <button id="ride-pad">Ride Cymbal</button>
-    </div>
+#controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+#control-header {
+    cursor: move;
+    background: #333;
+    color: #fff;
+    padding: 5px;
+    font-weight: bold;
+}
