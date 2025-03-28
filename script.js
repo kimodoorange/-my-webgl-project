@@ -11,7 +11,7 @@ const randomTextElement = document.getElementById('random-text');
 
 const colors = [["green", "blue"], ["blue", "purple"], ["purple", "violet"], ["yellow", "orange"]];
 
-const randomizeText = () => Array.from({ length: 29 }, (_, i) => i % 2 === 0 ? ' K I M O D O  O R A N G E'.charAt(i) : ' ').join('');
+const randomizeText = () => Array.from({ length: 25 }, (_, i) => i % 2 === 0 ? 'K I M O D O  O R A N G E'.charAt(i) : ' ').join('');
 
 const changeTextColor = () => {
     const [color1, color2] = colors[Math.floor(Math.random() * colors.length)];
