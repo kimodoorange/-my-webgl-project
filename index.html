@@ -3,41 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chromatic Fractal Noise Generator</title>
-    
-    <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
-    
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Google Font for enhanced typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>WebGL Project</title>
+    <style>
+        /* Example styles for your project */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .settings-element {
+            z-index: 1000; /* Ensure this is higher than the overlapping element */
+            position: relative; /* Ensure the element is positioned */
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .overlapping-element {
+            z-index: 10; /* Lower z-index to be behind settings */
+            position: absolute; /* Adjust positioning if necessary */
+            background-color: #f0f0f0;
+            padding: 20px;
+            border: 1px solid #999;
+            top: 50px; /* Example positioning */
+            left: 50px; /* Example positioning */
+        }
+    </style>
 </head>
 <body>
-    <!-- Main Canvas -->
-    <canvas id="glCanvas"></canvas>
-    
-    <!-- Information Overlay -->
-    <div id="info-overlay">
-        <h3>Chromatic Fractal Noise Generator</h3>
-        <p>Explore the boundaries of visual and audio complexity through interactive noise generation.</p>
+    <div class="settings-element">
+        <!-- Settings content here -->
+        <h2>Settings</h2>
+        <p>Modify your settings here.</p>
     </div>
-    
-    <!-- Interaction Hint -->
-    <div id="interaction-hint">
-        Click to start audio / Interact with controls
+    <div class="overlapping-element">
+        <!-- Overlapping content here -->
+        <h2>Overlapping Element</h2>
+        <p>This element should be behind the settings.</p>
     </div>
-    
-    <!-- Random Text Generator Container -->
-    <div id="title-container"></div>
-    
-    <!-- Main Script -->
-    <script src="script.js"></script>
-    
-    <!-- React for Title -->
-    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-    <script src="title.js"></script>
 </body>
 </html>
