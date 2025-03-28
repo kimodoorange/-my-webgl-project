@@ -30,7 +30,6 @@ const startTextRandomization = () => {
             clearInterval(interval);
             randomTextElement.textContent = ' K I M O D O  O R A N G E';
             setInterval(changeTextColor, 500); // Continuous color changes
-            setupAudio(); // Start audio immediately after the title is displayed
         }
     }, 100);
 };
@@ -225,5 +224,37 @@ initShaders(gl).then(program => {
 
         // Start the text randomization and audio setup immediately
         startTextRandomization();
+        setupAudio();
     }
 });
+
+// Make the control menu draggable and resizable
+interact('#controls')
+  .draggable({
+    listeners: {
+      move(event) {
+        const target = event.target
+        const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+        const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+
+        target.style.transform = `translate(${x}px, ${y}px)`
+        target.setAttribute('data-x', x)
+        target.setAttribute('data-y', y)
+      }
+    }
+  })
+  .resizable({
+    edges: { left: true, right: true, bottom: true, top: true }
+  })
+  .on('resizemove', event => {
+    const { target, rect, deltaRect } = event
+    const x = (parseFloat(target.getAttribute('data-x')) || 0) + deltaRect.left
+    const y = (parseFloat(target.getAttribute('data-y')) || 0) + deltaRect.top
+
+    target.style.width = `${rect.width}px`
+    target.style.height = `${rect.height}px`
+    target.style.transform = `translate(${x}px, ${y}px)`
+
+    target.setAttribute('data-x', x)
+    target.setAttribute('data-y', y)
+  })
