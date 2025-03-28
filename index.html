@@ -1,54 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chromatic Fractal Noise Generator</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Kimodo Orange: Formless Complexity Engine</title>
+
+    <!-- Fonts and Libraries -->
+    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <!-- WebGL Canvas -->
     <canvas id="glCanvas"></canvas>
-    <div id="text-overlay" style="position: absolute; top: 10px; width: 100%; text-align: center; font-size: 24px;">
+
+    <!-- Text Overlay -->
+    <div id="text-overlay">
         <span id="random-text">K I M O D O   O R A N G E</span>
     </div>
+
+    <!-- Floating Controls -->
     <div id="controls" class="floating-panel">
         <div id="control-header" class="draggable">Controls</div>
+        
+        <!-- Sliders -->
         <label for="complexitySlider">Complexity</label>
         <input type="range" id="complexitySlider" min="0" max="1" step="0.01" value="0.5">
+
         <label for="fluiditySlider">Fluidity</label>
         <input type="range" id="fluiditySlider" min="0" max="1" step="0.01" value="0.5">
-        <label for="dimensionalitySlider">Dimensionality</label>
-        <input type="range" id="dimensionalitySlider" min="2" max="5" step="1" value="3">
-        <label for="functionType">Function Type</label>
-        <select id="functionType">
-            <option value="sine">Sine</option>
-            <option value="cosine">Cosine</option>
-            <option value="tangent">Tangent</option>
-            <option value="exponential">Exponential</option>
+
+        <label for="chromaticitySlider">Chromatic Intensity</label>
+        <input type="range" id="chromaticitySlider" min="0" max="1" step="0.01" value="0.5">
+
+        <label for="tempoSlider">Tempo Variance</label>
+        <input type="range" id="tempoSlider" min="0" max="1" step="0.01" value="0.5">
+
+        <label for="pitchSlider">Pitch (Hz)</label>
+        <input type="range" id="pitchSlider" min="220" max="1760" step="1" value="880">
+
+        <label for="formShape">Form Shape</label>
+        <select id="formShape">
+            <option value="circle">Circle</option>
+            <option value="vortex">Vortex</option>
+            <option value="fractal">Fractal</option>
+            <option value="waveform">Waveform</option>
         </select>
-        <label for="fluidViscositySlider">Fluid Viscosity</label>
-        <input type="range" id="fluidViscositySlider" min="0.1" max="10.0" step="0.1" value="1.0">
-        <label for="pitchSlider">Chromatic Pitch</label>
-        <input type="range" id="pitchSlider" min="440" max="1760" step="1" value="880">
-        <label for="whammy-bar">Whammy Bar</label>
-        <input type="range" id="whammy-bar" min="-1" max="1" step="0.01" value="0">
-        <label>Drum Sounds</label>
-        <button id="bass-pad">Bass Drum</button>
-        <button id="snare-pad">Snare Drum</button>
-        <button id="ride-pad">Ride Cymbal</button>
-        <label>Note Controls</label>
-        <button id="note1">Note 1</button>
-        <button id="note2">Note 2</button>
-        <button id="note3">Note 3</button>
-        <button id="note4">Note 4</button>
-        <button id="note5">Note 5</button>
-        <button id="note6">Note 6</button>
-        <button id="note7">Note 7</button>
+
+        <!-- Notes -->
+        <label>Note Triggers</label>
+        <div class="note-buttons">
+            <button id="note1">C</button>
+            <button id="note2">D</button>
+            <button id="note3">E</button>
+            <button id="note4">F</button>
+            <button id="note5">G</button>
+            <button id="note6">A</button>
+            <button id="note7">B</button>
+        </div>
+
+        <!-- System Controls -->
         <button id="fullscreen-button">Fullscreen</button>
+        <button id="randomize-button">Randomize Settings</button>
     </div>
+
+    <!-- Main Logic Script -->
     <script src="script.js"></script>
+
 </body>
 </html>
