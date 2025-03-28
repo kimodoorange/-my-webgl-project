@@ -44,19 +44,19 @@ const vertexShaderSource = `
     void main() {
         vUv = position.xy * 0.5 + 0.5;
         vTime = time;
-
+        
         // Dynamic vertex displacement based on form fluidity
         vec4 displacedPosition = position;
         float distortion = sin(time * formFluidity) * 0.2;
         displacedPosition.xy += distortion * position.yx;
-
+        
         gl_Position = displacedPosition;
     }
 `;
 
 const fragmentShaderSource = `
     precision highp float;
-
+    
     uniform float time;
     uniform vec2 resolution;
     uniform float frequency;
@@ -64,41 +64,41 @@ const fragmentShaderSource = `
     uniform float formFluidity;
 
     varying vec2 vUv;
-
+    
     // Fractal noise generation
     float random(vec2 st) {
         return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
     }
-
+    
     // Improved noise function with chromatic complexity
     float noise(vec2 st) {
         vec2 i = floor(st);
         vec2 f = fract(st);
-
+        
         // Four corners in 2D of a tile
         float a = random(i);
         float b = random(i + vec2(1.0, 0.0));
         float c = random(i + vec2(0.0, 1.0));
         float d = random(i + vec2(1.0, 1.0));
-
+        
         // Smooth Interpolation using Hermite cubic
         vec2 u = f * f * (3.0 - 2.0 * f);
-
+        
         // Mix 4 corners percentages
         return mix(a, b, u.x) +
                 (c - a)* u.y * (1.0 - u.x) +
                 (d - b) * u.x * u.y;
     }
-
+    
     // Fractal Brownian Motion for complex texture
     float fbm(vec2 x) {
         float v = 0.0;
         float a = 0.5;
         vec2 shift = vec2(100.0);
-
+        
         // Rotate to add more complexity
         mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
-
+        
         for (int i = 0; i < 5; i++) {
             v += a * noise(x);
             x = rot * x * 2.0 + shift;
@@ -106,35 +106,35 @@ const fragmentShaderSource = `
         }
         return v;
     }
-
+    
     void main() {
         vec2 st = gl_FragCoord.xy / resolution.xy;
-
+        
         // Chromatic distortion with form fluidity
         float timeVariation = time * 0.1;
         float noiseScale = 5.0 + sin(timeVariation) * formFluidity;
-
+        
         // Layered noise generation
         float n = fbm(st * noiseScale);
-
+        
         // Chromatic color generation
         float r = fbm(st * noiseScale + vec2(timeVariation, 0.0));
         float g = fbm(st * noiseScale + vec2(0.0, timeVariation));
         float b = fbm(st * noiseScale + vec2(-timeVariation, timeVariation));
-
+        
         // Intensity modulation
         vec3 color = vec3(
             r * (1.0 + chromaticIntensity),
             g * (1.0 + chromaticIntensity * 0.7),
             b * (1.0 + chromaticIntensity * 0.5)
         );
-
+        
         // Final color with noise and chromatic complexity
         gl_FragColor = vec4(color, 1.0);
     }
 `;
 
-// Shader Compilation
+// Shader Compilation (previous compilation code remains the same)
 function createShader(gl, type, source) {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
@@ -165,7 +165,7 @@ if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     console.error("Shader program linking error:", gl.getProgramInfoLog(program));
 }
 
-// Geometry Setup
+// Geometry Setup (previous setup remains the same)
 const positionBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 const positions = new Float32Array([
@@ -187,6 +187,9 @@ const resolutionUniform = gl.getUniformLocation(program, "resolution");
 const frequencyUniform = gl.getUniformLocation(program, "frequency");
 const chromaticIntensityUniform = gl.getUniformLocation(program, "chromaticIntensity");
 const formFluidityUniform = gl.getUniformLocation(program, "formFluidity");
+const dimensionalityUniform = gl.getUniformLocation(program, "dimensionality");
+const functionTypeUniform = gl.getUniformLocation(program, "functionType");
+const fluidViscosityUniform = gl.getUniformLocation(program, "fluidViscosity");
 
 // Expanded GUI Settings with Dichotomous Fluidity Concept
 const settings = {
@@ -230,7 +233,7 @@ function updateComplexityMode(mode) {
     }
 }
 
-// Audio Setup
+// Audio Setup (previous audio setup remains largely the same)
 let audioContext;
 let gainNode;
 let noiseNode;
@@ -313,6 +316,9 @@ function render(time) {
     gl.uniform1f(frequencyUniform, settings.frequency);
     gl.uniform1f(chromaticIntensityUniform, settings.chromaticIntensity);
     gl.uniform1f(formFluidityUniform, settings.formFluidity);
+    gl.uniform1i(dimensionalityUniform, dimensionality);
+    gl.uniform1f(fluidViscosityUniform, fluidViscosity);
+    gl.uniform1i(functionTypeUniform, selectedFunctionType);
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
