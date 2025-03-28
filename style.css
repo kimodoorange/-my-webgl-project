@@ -1,20 +1,86 @@
-#glCanvas {
-    width: 100%;
-    height: 100%;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chromatic Fractal Noise Generator</title>
 
-#midi-controller, #drum-pad {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    display: flex;
-    gap: 10px;
-}
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
 
-#midi-controller button, #drum-pad button {
-    padding: 10px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-}
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Google Font for enhanced typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Main Canvas -->
+    <canvas id="glCanvas"></canvas>
+
+    <!-- Information Overlay -->
+    <div id="info-overlay">
+        <h3>Chromatic Fractal Noise Generator</h3>
+        <p>Explore the boundaries of visual and audio complexity through interactive</p>
+    </div>
+
+    <!-- Interaction Hint -->
+    <div id="interaction-hint">
+        Click to start audio / Interact with controls
+    </div>
+
+    <!-- Text Overlay -->
+    <div id="text-overlay" style="position: absolute; top: 10px; width: 100%; text-align: center; font-size: 24px; font-family: 'Space Grotesk', sans-serif; display: none;">
+        <span id="random-text"></span>
+    </div>
+
+    <!-- Toggle Button for Accelerating Shape Interference -->
+    <label for="accelerationToggle">Accelerate Shape Interference</label>
+    <input type="checkbox" id="accelerationToggle">
+
+    <!-- Additional Sliders and Toggles -->
+    <div id="controls">
+        <label for="complexitySlider">Complexity</label>
+        <input type="range" id="complexitySlider" min="0" max="1" step="0.01" value="0.5">
+        <label for="fluiditySlider">Fluidity</label>
+        <input type="range" id="fluiditySlider" min="0" max="1" step="0.01" value="0.5">
+        <label for="dimensionalitySlider">Dimensionality</label>
+        <input type="range" id="dimensionalitySlider" min="2" max="5" step="1" value="3">
+        <label for="functionType">Function Type</label>
+        <select id="functionType">
+            <option value="sine">Sine</option>
+            <option value="cosine">Cosine</option>
+            <option value="tangent">Tangent</option>
+            <option value="exponential">Exponential</option>
+        </select>
+        <label for="fluidViscositySlider">Fluid Viscosity</label>
+        <input type="range" id="fluidViscositySlider" min="0.1" max="10.0" step="0.1" value="1.0">
+        <label for="pitchSlider">Chromatic Pitch</label>
+        <input type="range" id="pitchSlider" min="440" max="1760" step="1" value="880">
+        <label for="pitchShiftSlider">Pitch Shift</label>
+        <input type="range" id="pitchShiftSlider" min="0.5" max="2.0" step="0.01" value="1.0">
+        <label for="modulatorSlider">Modulator</label>
+        <input type="range" id="modulatorSlider" min="0.0" max="1.0" step="0.01" value="0.5">
+    </div>
+
+    <!-- Note Buttons -->
+    <div id="note-controls">
+        <button id="note1">Note 1</button>
+        <button id="note2">Note 2</button>
+        <button id="note3">Note 3</button>
+        <button id="note4">Note 4</button>
+        <button id="note5">Note 5</button>
+        <button id="note6">Note 6</button>
+        <button id="note7">Note 7</button>
+    </div>
+
+    <!-- Drum Pad -->
+    <div id="drum-pad">
+        <button id="bass-pad">Bass Drum</button>
+        <button id="snare-pad">Snare Drum</button>
+        <button id="ride-pad">Ride Cymbal</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
