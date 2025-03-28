@@ -30,6 +30,7 @@ const startTextRandomization = () => {
             clearInterval(interval);
             randomTextElement.textContent = ' K I M O D O  O R A N G E';
             setInterval(changeTextColor, 500); // Continuous color changes
+            setupAudio(); // Start audio immediately after the title is displayed
         }
     }, 100);
 };
@@ -201,7 +202,9 @@ initShaders(gl).then(program => {
         document.getElementById('ride-pad').addEventListener('click', () => playSound(drumSounds.ride));
 
         function playNote(frequency) {
-            constantOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            if (audioContext && constantOscillator) {
+                constantOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            }
         }
 
         document.getElementById('note1').addEventListener('click', () => playNote(261.63)); // C4
