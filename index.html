@@ -3,15 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fractal Noise Generator</title>
+    <title>Chromatic Fractal Noise Generator</title>
+    
+    <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; background-color: black; }
-        canvas { display: block; }
-    </style>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Google Font for enhanced typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Main Canvas -->
     <canvas id="glCanvas"></canvas>
+    
+    <!-- Information Overlay -->
+    <div id="info-overlay">
+        <h3>Chromatic Fractal Noise Generator</h3>
+        <p>Explore the boundaries of visual and audio complexity through interactive noise generation.</p>
+    </div>
+    
+    <!-- Interaction Hint -->
+    <div id="interaction-hint">
+        Click to start audio / Interact with controls
+    </div>
+    
+    <!-- Random Text Generator Container -->
+    <div id="title-container"></div>
+    
+    <!-- Main Script -->
     <script src="script.js"></script>
+    
+    <!-- React for Title -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="title.js"></script>
 </body>
 </html>
