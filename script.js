@@ -149,11 +149,11 @@ initShaders(gl).then(program => {
             formFluidity: 0.5,       // Form-complexity interaction
             complexityMode: "organic", // Dichotomous complexity mode
             pitch: 880,              // Chromatic pitch
-            pitchShift: 1.0,         // Pitch shift factor
             modulator: 0.5           // Modulation depth
         };
 
-        const gui = new dat.GUI();
+        const gui = new dat.GUI({ autoPlace: false });
+        document.getElementById('controls').appendChild(gui.domElement);
         gui.add(settings, "frequency", 0.1, 10.0).name("Visual Frequency");
         gui.add(settings, "noiseVolume", 0.0, 1.0).name("Noise Volume").onChange(updateAudio);
         gui.add(settings, "noiseType", ["white", "pink", "brown"]).name("Noise Type").onChange(updateAudio);
@@ -162,9 +162,35 @@ initShaders(gl).then(program => {
         gui.add(settings, "complexityMode", ["organic", "mechanical", "quantum", "fractal"])
             .name("Complexity Mode")
             .onChange(updateComplexityMode);
-        gui.add(settings, "pitch", 440, 1760).name("Chromatic Pitch").onChange(updatePitch);
-        gui.add(settings, "pitchShift", 0.5, 2.0).name("Pitch Shift");
+        gui.add(settings, "pitch", 440, 1760).name("Chromatic Pitch");
         gui.add(settings, "modulator", 0.0, 1.0).name("Modulator");
+
+        // Make the control box draggable and minimizable
+        let isMinimized = false;
+        document.getElementById('minimize-button').addEventListener('click', () => {
+            isMinimized = !isMinimized;
+            gui.domElement.style.display = isMinimized ? 'none' : 'block';
+        });
+
+        const controls = document.getElementById('controls');
+        const header = document.getElementById('control-header');
+        header.addEventListener('mousedown', (e) => {
+            const drag = (e) => {
+                controls.style.left = `${e.clientX - offsetX}px`;
+                controls.style.top = `${e.clientY - offsetY}px`;
+            };
+
+            let offsetX = e.clientX - controls.offsetLeft;
+            let offsetY = e.clientY - controls.offsetTop;
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', () => {
+                document.removeEventListener('mousemove', drag);
+            }, { once: true });
+        });
+
+        // Increase shape decay speed by 1000 fold
+        const shapeDecaySpeed = 1000;
 
         // Complexity Mode Interaction
         function updateComplexityMode(mode) {
@@ -205,8 +231,6 @@ initShaders(gl).then(program => {
         // Update Audio Parameters
         function updateAudio() {}
 
-        function updatePitch(pitch) {}
-
         // User interaction required to start audio
         document.addEventListener("click", setupAudio);
 
@@ -215,7 +239,7 @@ initShaders(gl).then(program => {
             gl.clear(gl.COLOR_BUFFER_BIT);
 
             gl.useProgram(program);
-            gl.uniform1f(timeUniform, time * 0.001);
+            gl.uniform1f(timeUniform, time * 0.001 * shapeDecaySpeed); // Increase shape decay speed
             gl.uniform2f(resolutionUniform, canvas.width, canvas.height);
             gl.uniform1f(frequencyUniform, settings.frequency);
             gl.uniform1f(chromaticIntensityUniform, settings.chromaticIntensity);
@@ -287,73 +311,26 @@ initShaders(gl).then(program => {
             }
         });
 
-        // Western musical scale frequencies (A4 = 440 Hz)
-        const westernScaleFrequencies = [
-            261.63, // C4
-            293.66, // D4
-            329.63, // E4
-            349.23, // F4
-            392.00, // G4
-            440.00, // A4
-            493.88  // B4
-        ];
-
-        // Function to play a note with pitch shifting
-        function playNoteWithPitchShift(noteIndex) {
-            const baseFrequency = westernScaleFrequencies[noteIndex % westernScaleFrequencies.length];
-            const shiftedFrequency = baseFrequency * settings.pitchShift;
-            const modulatedFrequency = shiftedFrequency * (1 + Math.sin(audioContext.currentTime * settings.modulator) * 0.1);
-
+        // Function to play a note
+        function playNote(frequency) {
             const osc = audioContext.createOscillator();
-            osc.frequency.setValueAtTime(modulatedFrequency, audioContext.currentTime);
+            osc.frequency.setValueAtTime(frequency, audioContext.currentTime);
 
             const gainNodeOsc = audioContext.createGain();
             gainNodeOsc.gain.setValueAtTime(1, audioContext.currentTime);
 
             osc.connect(gainNodeOsc).connect(audioContext.destination);
-
             osc.start();
             osc.stop(audioContext.currentTime + 1);
         }
 
         // Add event listeners for note buttons
-        document.getElementById('note1').addEventListener('click', () => playNoteWithPitchShift(0));
-        document.getElementById('note2').addEventListener('click', () => playNoteWithPitchShift(1));
-        document.getElementById('note3').addEventListener('click', () => playNoteWithPitchShift(2));
-        document.getElementById('note4').addEventListener('click', () => playNoteWithPitchShift(3));
-        document.getElementById('note5').addEventListener('click', () => playNoteWithPitchShift(4));
-        document.getElementById('note6').addEventListener('click', () => playNoteWithPitchShift(5));
-        document.getElementById('note7').addEventListener('click', () => playNoteWithPitchShift(6));
-
-        // Function to play drum sound with pitch shifting
-        function playDrumSound(buffer) {
-            const source = audioContext.createBufferSource();
-            source.buffer = buffer;
-            source.playbackRate.value = settings.pitchShift;
-            source.connect(audioContext.destination);
-            source.start();
-        }
-
-        // Load and play drum samples
-        const drumBuffers = {};
-
-        async function loadDrumSamples() {
-            const drumUrls = {
-                bass: 'path/to/8bit-bass-drum.wav',
-                snare: 'path/to/8bit-snare-drum.wav',
-                ride: 'path/to/8bit-ride-cymbal.wav'
-            };
-            for (const [key, url] of Object.entries(drumUrls)) {
-                const response = await fetch(url);
-                const arrayBuffer = await response.arrayBuffer();
-                drumBuffers[key] = await audioContext.decodeAudioData(arrayBuffer);
-            }
-        }
-
-        document.getElementById('bass-pad').addEventListener('click', () => playDrumSound(drumBuffers.bass));
-        document.getElementById('snare-pad').addEventListener('click', () => playDrumSound(drumBuffers.snare));
-        document.getElementById('ride-pad').addEventListener('click', () => playDrumSound(drumBuffers.ride));
-
-        loadDrumSamples();
+        document.getElementById('note1').addEventListener('click', () => playNote(261.63)); // C4
+        document.getElementById('note2').addEventListener('click', () => playNote(293.66)); // D4
+        document.getElementById('note3').addEventListener('click', () => playNote(329.63)); // E4
+        document.getElementById('note4').addEventListener('click', () => playNote(349.23)); // F4
+        document.getElementById('note5').addEventListener('click', () => playNote(392.00)); // G4
+        document.getElementById('note6').addEventListener('click', () => playNote(440.00)); // A4
+        document.getElementById('note7').addEventListener('click', () => playNote(493.88)); // B4
     }
 });
