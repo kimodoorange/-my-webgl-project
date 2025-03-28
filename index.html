@@ -6,14 +6,10 @@
     <title>Chromatic Fractal Noise Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
 </head>
 <body>
     <canvas id="glCanvas"></canvas>
-    <div id="info-overlay">
-        <h3>Chromatic Fractal Noise Generator</h3>
-        <p>Explore the boundaries of visual and audio complexity through interactive</p>
-    </div>
     <div id="interaction-hint">Click to start audio / Interact with controls</div>
     <div id="text-overlay" style="position: absolute; top: 10px; width: 100%; text-align: center; font-size: 24px; display: none;">
         <span id="random-text"></span>
@@ -37,9 +33,13 @@
         <input type="range" id="fluidViscositySlider" min="0.1" max="10.0" step="0.1" value="1.0">
         <label for="pitchSlider">Chromatic Pitch</label>
         <input type="range" id="pitchSlider" min="440" max="1760" step="1" value="880">
-        <button id="minimize-button">Minimize</button>
-    </div>
-    <div id="note-controls">
+        <label for="whammy-bar">Whammy Bar</label>
+        <input type="range" id="whammy-bar" min="-1" max="1" step="0.01" value="0">
+        <label>Drum Sounds</label>
+        <button id="bass-pad">Bass Drum</button>
+        <button id="snare-pad">Snare Drum</button>
+        <button id="ride-pad">Ride Cymbal</button>
+        <label>Note Controls</label>
         <button id="note1">Note 1</button>
         <button id="note2">Note 2</button>
         <button id="note3">Note 3</button>
@@ -47,13 +47,8 @@
         <button id="note5">Note 5</button>
         <button id="note6">Note 6</button>
         <button id="note7">Note 7</button>
+        <button id="minimize-button">Minimize</button>
     </div>
-    <div id="drum-pad">
-        <button id="bass-pad">Bass Drum</button>
-        <button id="snare-pad">Snare Drum</button>
-        <button id="ride-pad">Ride Cymbal</button>
-    </div>
-    <input type="range" id="whammy-bar" min="-1" max="1" step="0.01" value="0">
     <script src="script.js"></script>
 </body>
 </html>
