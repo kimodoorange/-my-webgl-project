@@ -10,8 +10,8 @@ void main() {
     vUv = position.xy * 0.5 + 0.5;
     vTime = time;
 
-    float angle = time * 0.4;
-    float twist = sin(time + position.x * 2.0) * formFluidity * 0.5;
+    float angle = time * 0.6;
+    float twist = sin(time + position.y * 3.0) * formFluidity * 0.6;
 
     mat2 rotation = mat2(
         cos(angle + twist), -sin(angle + twist),
