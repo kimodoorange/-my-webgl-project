@@ -4,7 +4,6 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 gl.viewport(0, 0, canvas.width, canvas.height);
 
-// Shader setup
 async function loadShader(url) {
   const res = await fetch(url);
   return res.text();
@@ -19,7 +18,6 @@ function createShader(gl, type, source) {
 async function init() {
   const vs = createShader(gl, gl.VERTEX_SHADER, await loadShader('vertexShader.glsl'));
   const fs = createShader(gl, gl.FRAGMENT_SHADER, await loadShader('fragmentShader.glsl'));
-
   const program = gl.createProgram();
   gl.attachShader(program, vs);
   gl.attachShader(program, fs);
@@ -28,11 +26,10 @@ async function init() {
 
   const pos = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, pos);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-
-  const positionLoc = gl.getAttribLocation(program, 'position');
-  gl.enableVertexAttribArray(positionLoc);
-  gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pLoc = gl.getAttribLocation(program, 'position');
+  gl.enableVertexAttribArray(pLoc);
+  gl.vertexAttribPointer(pLoc, 2, gl.FLOAT, false, 0, 0);
 
   const u = {
     time: gl.getUniformLocation(program, 'time'),
@@ -59,26 +56,28 @@ async function init() {
   const panNode = audioCtx.createStereoPanner();
 
   drone.type = 'sine';
-  drone.frequency.value = s.pitch;
   poly.type = 'triangle';
-  poly.frequency.value = s.pitch * 0.75;
-
   drone.connect(droneGain).connect(audioCtx.destination);
   poly.connect(polyGain).connect(panNode).connect(audioCtx.destination);
 
-  droneGain.gain.value = 0.3;
+  function updateAudio() {
+    drone.frequency.setValueAtTime(s.pitch, audioCtx.currentTime);
+    poly.frequency.setValueAtTime(s.pitch * 0.75, audioCtx.currentTime);
+  }
+
+  droneGain.gain.value = 0.25;
   polyGain.gain.value = 0.2;
   panNode.pan.value = 0;
-
   drone.start();
   poly.start();
+  updateAudio();
 
   let tempoOffset = 0;
-  function randomTempoFluctuate() {
+  function randomTempo() {
     tempoOffset = Math.random() * s.tempoVariance * 10;
-    setTimeout(randomTempoFluctuate, 500 + Math.random() * 1500);
+    setTimeout(randomTempo, 500 + Math.random() * 1000);
   }
-  randomTempoFluctuate();
+  randomTempo();
 
   function render(t) {
     const time = t * 0.001 + tempoOffset;
@@ -89,7 +88,7 @@ async function init() {
     gl.uniform1f(u.chromaticIntensity, s.chromaticIntensity);
     gl.uniform1f(u.formFluidity, s.formFluidity);
     gl.uniform1f(u.pitch, s.pitch);
-    panNode.pan.value = Math.sin(time * 0.1) * 0.75;
+    panNode.pan.value = Math.sin(time * 0.15) * 0.75;
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     requestAnimationFrame(render);
   }
@@ -101,8 +100,7 @@ async function init() {
   document.getElementById('tempoSlider').oninput = e => s.tempoVariance = parseFloat(e.target.value);
   document.getElementById('pitchSlider').oninput = e => {
     s.pitch = parseFloat(e.target.value);
-    drone.frequency.setValueAtTime(s.pitch, audioCtx.currentTime);
-    poly.frequency.setValueAtTime(s.pitch * 0.75, audioCtx.currentTime);
+    updateAudio();
   };
   document.getElementById('fullscreen-button').onclick = () => {
     document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
@@ -114,29 +112,56 @@ async function init() {
     });
     s.pitch = 220 + Math.random() * 1540;
     document.getElementById('pitchSlider').value = s.pitch;
-    drone.frequency.setValueAtTime(s.pitch, audioCtx.currentTime);
-    poly.frequency.setValueAtTime(s.pitch * 0.75, audioCtx.currentTime);
+    updateAudio();
   };
+
+  // Title character randomizer
+  const textEl = document.getElementById('random-text');
+  const baseText = 'K I M O D O   O R A N G E';
+  function randomizeTextOnce() {
+    let chars = baseText.split('');
+    for (let i = 0; i < chars.length; i++) {
+      if (Math.random() < 0.15 && chars[i] !== ' ') {
+        chars[i] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+      }
+    }
+    textEl.textContent = chars.join('');
+  }
+  setInterval(() => {
+    randomizeTextOnce();
+    setTimeout(() => textEl.textContent = baseText, 400);
+  }, 2400);
+
+  // Tone click effects
+  textEl.addEventListener('click', () => {
+    const tone = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    tone.frequency.value = 440 + Math.random() * 440;
+    tone.type = 'sawtooth';
+    tone.connect(gain);
+    gain.connect(audioCtx.destination);
+    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    tone.start();
+    tone.stop(audioCtx.currentTime + 0.2);
+  });
 }
 
-// Drum triggers
+// Drum sounds
 const drumSounds = {
   bass: 'audio/bass-drum.wav',
   snare: 'audio/snare-drum.wav',
-  ride: 'audio/ride-cymbal.wav'
+  'hi-hat': 'audio/hi-hat.wav'
 };
-
 function playDrumSound(type) {
   if (drumSounds[type]) {
     const audio = new Audio(drumSounds[type]);
     audio.play();
   }
 }
-
 document.addEventListener('keydown', (e) => {
   if (e.key === 'z') playDrumSound('bass');
   if (e.key === 'x') playDrumSound('snare');
-  if (e.key === 'c') playDrumSound('ride');
+  if (e.key === 'c') playDrumSound('hi-hat');
 });
 
 init();
