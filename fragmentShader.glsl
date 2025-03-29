@@ -9,7 +9,7 @@ uniform float pitch;
 
 varying vec2 vUv;
 
-// Noise helpers
+// Noise generator
 float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453);
 }
@@ -17,8 +17,8 @@ float noise(vec2 st) {
     vec2 i = floor(st);
     vec2 f = fract(st);
     vec2 u = f*f*(3.0-2.0*f);
-    return mix(mix(random(i), random(i+vec2(1,0)), u.x),
-               mix(random(i+vec2(0,1)), random(i+vec2(1,1)), u.x), u.y);
+    return mix(mix(random(i), random(i+vec2(1.0,0.0)), u.x),
+               mix(random(i+vec2(0.0,1.0)), random(i+vec2(1.0,1.0)), u.x), u.y);
 }
 float fbm(vec2 st) {
     float value = 0.0;
@@ -34,7 +34,7 @@ float fbm(vec2 st) {
 void main() {
     vec2 st = gl_FragCoord.xy / resolution.xy;
     st = (st - 0.5) * resolution / min(resolution.x, resolution.y);
-    float scale = 3.0 + sin(time * 0.1) * formFluidity * 5.0;
+    float scale = 3.0 + sin(time * 0.15) * formFluidity * 6.0;
 
     float base = fbm(st * scale + time * 0.1);
     float r = fbm(st * scale + vec2(time * 0.2, 0.0)) * (1.0 + chromaticIntensity);
