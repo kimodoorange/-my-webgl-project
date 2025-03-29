@@ -1,9 +1,71 @@
-const canvas = document.getElementById('glCanvas');
-const gl = canvas.getContext('webgl');
+
+let canvas = document.getElementById('glCanvas');
+let gl = canvas.getContext('webgl');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-gl.viewport(0, 0, canvas.width, canvas.height);
 
+// Rainbow Star
+let star = {
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  vx: (Math.random() - 0.5) * 8,
+  vy: (Math.random() - 0.5) * 8,
+  size: 40,
+  captured: false
+};
+
+function drawStar(ctx, x, y, size, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.beginPath();
+  for (let i = 0; i < 5; i++) {
+    ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * size,
+               -Math.sin((18 + i * 72) * Math.PI / 180) * size);
+    ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * size / 2,
+               -Math.sin((54 + i * 72) * Math.PI / 180) * size / 2);
+  }
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.restore();
+}
+
+function animateStar() {
+  let ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (!star.captured) {
+    star.x += star.vx;
+    star.y += star.vy;
+    if (star.x < 0 || star.x > canvas.width) star.vx *= -1;
+    if (star.y < 0 || star.y > canvas.height) star.vy *= -1;
+
+    let hue = (Date.now() / 20) % 360;
+    let color = `hsl(${hue}, 100%, 60%)`;
+    drawStar(ctx, star.x, star.y, star.size, color);
+  }
+
+  requestAnimationFrame(animateStar);
+}
+
+canvas.addEventListener('touchstart', (e) => {
+  let touch = e.touches[0];
+  let dx = touch.clientX - star.x;
+  let dy = touch.clientY - star.y;
+  if (Math.sqrt(dx * dx + dy * dy) < star.size * 1.2) {
+    star.captured = true;
+    console.log('Star captured!');
+  }
+});
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+animateStar();
+
+// WebGL Shader & Audio Engine
 async function loadShader(url) {
   const res = await fetch(url);
   return res.text();
@@ -27,17 +89,13 @@ function startAudio(pitch = 880) {
   poly.type = 'triangle';
   drone.frequency.value = pitch;
   poly.frequency.value = pitch * 0.75;
-
   drone.connect(droneGain).connect(audioCtx.destination);
   poly.connect(polyGain).connect(panNode).connect(audioCtx.destination);
-
   droneGain.gain.value = 0.25;
   polyGain.gain.value = 0.2;
-
   drone.start();
   poly.start();
 }
-
 startAudio();
 
 async function init() {
@@ -101,6 +159,7 @@ async function init() {
   }
   requestAnimationFrame(render);
 
+  // UI Sliders
   document.getElementById('complexitySlider').oninput = e => s.frequency = parseFloat(e.target.value);
   document.getElementById('fluiditySlider').oninput = e => s.formFluidity = parseFloat(e.target.value);
   document.getElementById('chromaticitySlider').oninput = e => s.chromaticIntensity = parseFloat(e.target.value);
@@ -109,9 +168,8 @@ async function init() {
     s.pitch = parseFloat(e.target.value);
     updateAudioParams();
   };
-  document.getElementById('fullscreen-button').onclick = () => {
-    document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
-  };
+
+  // Fullscreen & Randomizer
   document.getElementById('randomize-button').onclick = () => {
     ['frequency','formFluidity','chromaticIntensity','tempoVariance'].forEach(k => {
       s[k] = Math.random();
@@ -122,10 +180,9 @@ async function init() {
     updateAudioParams();
   };
 
-  // Title animation + tone
+  // Title Animation
   const textEl = document.getElementById('random-text');
   const baseText = 'K I M O D O   O R A N G E';
-
   function randomizeTextOnce() {
     let chars = baseText.split('');
     for (let i = 0; i < chars.length; i++) {
@@ -135,7 +192,6 @@ async function init() {
     }
     textEl.textContent = chars.join('');
   }
-
   setInterval(() => {
     randomizeTextOnce();
     setTimeout(() => {
@@ -156,20 +212,19 @@ async function init() {
   });
 }
 
-// Drum sounds
+// Drum Sounds
 const drumSounds = {
   bass: 'audio/bass-drum.wav',
   snare: 'audio/snare-drum.wav',
-  'hi-hat': 'audio/hi-hat.wav'
+  'hi-hat': 'audio/hi-hat.wav',
+  bass2: 'audio/bass-drum2.wav' // Add bass2 sound
 };
 function playDrumSound(type) {
   const audio = new Audio(drumSounds[type]);
   audio.play();
 }
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'z') playDrumSound('bass');
-  if (e.key === 'x') playDrumSound('snare');
-  if (e.key === 'c') playDrumSound('hi-hat');
-});
+
+// Event listener to trigger drum sounds when clicked
+document.getElementById('bass2').addEventListener('click', () => playDrumSound('bass2'));
 
 init();
