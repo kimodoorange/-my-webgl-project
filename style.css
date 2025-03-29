@@ -12,42 +12,55 @@ html, body {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 0;
   width: 100vw;
   height: 100vh;
+  z-index: 0;
 }
 
 #text-overlay {
   position: absolute;
-  top: 20px;
-  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: bold;
   color: #00ccff;
-  text-shadow: 
-    0 0 10px rgba(0, 204, 255, 0.8),
-    0 0 20px rgba(0, 204, 255, 0.8),
-    0 0 30px rgba(0, 204, 255, 0.8),
-    0 0 40px rgba(0, 204, 255, 0.8);
-  z-index: 2;
+  animation: shiftColor 6s infinite alternate;
+  z-index: 3;
   user-select: none;
   cursor: pointer;
+  letter-spacing: 0.25em;
+  text-shadow:
+    0 0 10px rgba(0, 204, 255, 0.8),
+    0 0 20px rgba(0, 204, 255, 0.8),
+    0 0 30px rgba(0, 204, 255, 0.6),
+    0 0 40px rgba(0, 204, 255, 0.4);
 }
 
-.fixed-bottom-panel {
+@keyframes shiftColor {
+  0%   { color: #00ccff; }
+  25%  { color: #ff00cc; }
+  50%  { color: #ffff00; }
+  75%  { color: #00ff99; }
+  100% { color: #00ccff; }
+}
+
+.resizable-top-panel {
   position: fixed;
-  bottom: 0;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   max-width: 360px;
-  padding: 12px 16px;
   background: #ffffff;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  z-index: 3;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 14px 16px;
+  resize: vertical;
+  overflow-y: auto;
+  z-index: 4;
   text-align: center;
 }
 
