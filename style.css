@@ -36,8 +36,8 @@ body, html {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 300px;
-  padding: 12px;
+  width: 320px;
+  padding: 14px;
   background: rgba(255, 255, 255, 0.88);
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
