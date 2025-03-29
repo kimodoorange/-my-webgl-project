@@ -97,6 +97,20 @@ function startAudio(pitch = 880) {
 }
 startAudio();
 
+// Tap detection for stopping audio
+let tapCount = 0;
+let tapTimer = null;
+canvas.addEventListener('touchstart', () => {
+  tapCount++;
+  if (tapTimer) clearTimeout(tapTimer);
+  tapTimer = setTimeout(() => { tapCount = 0; }, 400);
+  if (tapCount >= 3) {
+    drone.stop();
+    poly.stop();
+    console.log("Audio stopped.");
+  }
+});
+
 async function init() {
   const vs = createShader(gl, gl.VERTEX_SHADER, await loadShader('vertexShader.glsl'));
   const fs = createShader(gl, gl.FRAGMENT_SHADER, await loadShader('fragmentShader.glsl'));
@@ -157,8 +171,8 @@ async function init() {
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
-
-  // UI Sliders
+  
+    // UI Sliders
   document.getElementById('complexitySlider').oninput = e => s.frequency = parseFloat(e.target.value);
   document.getElementById('fluiditySlider').oninput = e => s.formFluidity = parseFloat(e.target.value);
   document.getElementById('chromaticitySlider').oninput = e => s.chromaticIntensity = parseFloat(e.target.value);
@@ -216,7 +230,7 @@ const drumSounds = {
   bass: 'audio/bass-drum.wav',
   snare: 'audio/snare-drum.wav',
   'hi-hat': 'audio/hi-hat.wav',
-  bass2: 'audio/bass-drum2.wav' // Add bass2 sound
+  bass2: 'audio/bass-drum2.wav'
 };
 
 function playDrumSound(type) {
@@ -224,7 +238,6 @@ function playDrumSound(type) {
   audio.play();
 }
 
-// Event listener to trigger drum sounds when clicked
 document.getElementById('bass2').addEventListener('click', () => playDrumSound('bass2'));
 
 init();
