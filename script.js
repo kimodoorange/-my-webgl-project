@@ -15,18 +15,14 @@ function createShader(gl, type, source) {
   return shader;
 }
 
-let audioStarted = false;
-let audioCtx, drone, poly, droneGain, polyGain, panNode;
+let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let drone = audioCtx.createOscillator();
+let poly = audioCtx.createOscillator();
+let droneGain = audioCtx.createGain();
+let polyGain = audioCtx.createGain();
+let panNode = audioCtx.createStereoPanner();
 
 function startAudio(pitch = 880) {
-  if (audioStarted) return;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  drone = audioCtx.createOscillator();
-  poly = audioCtx.createOscillator();
-  droneGain = audioCtx.createGain();
-  polyGain = audioCtx.createGain();
-  panNode = audioCtx.createStereoPanner();
-
   drone.type = 'sine';
   poly.type = 'triangle';
   drone.frequency.value = pitch;
@@ -40,11 +36,9 @@ function startAudio(pitch = 880) {
 
   drone.start();
   poly.start();
-
-  audioStarted = true;
 }
 
-document.body.addEventListener('click', () => startAudio(), { once: true });
+startAudio();
 
 async function init() {
   const vs = createShader(gl, gl.VERTEX_SHADER, await loadShader('vertexShader.glsl'));
@@ -87,7 +81,6 @@ async function init() {
   randomTempo();
 
   function updateAudioParams() {
-    if (!audioStarted) return;
     drone.frequency.setValueAtTime(s.pitch, audioCtx.currentTime);
     poly.frequency.setValueAtTime(s.pitch * 0.75, audioCtx.currentTime);
     panNode.pan.value = Math.sin(performance.now() * 0.001 * 0.1) * 0.75;
@@ -129,7 +122,7 @@ async function init() {
     updateAudioParams();
   };
 
-  // Title text randomization and interaction
+  // Title animation + tone
   const textEl = document.getElementById('random-text');
   const baseText = 'K I M O D O   O R A N G E';
 
@@ -151,7 +144,6 @@ async function init() {
   }, 2600);
 
   textEl.addEventListener('click', () => {
-    if (!audioCtx) return;
     const tone = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     tone.type = 'square';
@@ -164,7 +156,7 @@ async function init() {
   });
 }
 
-// Drum triggers
+// Drum sounds
 const drumSounds = {
   bass: 'audio/bass-drum.wav',
   snare: 'audio/snare-drum.wav',
