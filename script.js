@@ -171,8 +171,8 @@ async function init() {
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
-  
-    // UI Sliders
+
+  // UI Sliders
   document.getElementById('complexitySlider').oninput = e => s.frequency = parseFloat(e.target.value);
   document.getElementById('fluiditySlider').oninput = e => s.formFluidity = parseFloat(e.target.value);
   document.getElementById('chromaticitySlider').oninput = e => s.chromaticIntensity = parseFloat(e.target.value);
@@ -229,15 +229,12 @@ async function init() {
 const drumSounds = {
   bass: 'audio/bass-drum.wav',
   snare: 'audio/snare-drum.wav',
-  'hi-hat': 'audio/hi-hat.wav',
-  bass2: 'audio/bass-drum2.wav'
+  'hi-hat': 'audio/hi-hat.wav'
 };
 
 function playDrumSound(type) {
   const audio = new Audio(drumSounds[type]);
   audio.play();
 }
-
-document.getElementById('bass2').addEventListener('click', () => playDrumSound('bass2'));
 
 init();
