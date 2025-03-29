@@ -10,14 +10,15 @@ void main() {
     vUv = position.xy * 0.5 + 0.5;
     vTime = time;
 
-    float angle = time * 0.6;
-    float twist = sin(time + position.y * 3.0) * formFluidity * 0.6;
+    // Convert to polar coordinates
+    float r = length(position.xy);
+    float theta = atan(position.y, position.x);
 
-    mat2 rotation = mat2(
-        cos(angle + twist), -sin(angle + twist),
-        sin(angle + twist),  cos(angle + twist)
-    );
+    // Spiral transformation
+    float spiral = time * 0.4 + r * 4.0;
+    theta += sin(spiral) * 0.2 * formFluidity;
 
-    vec2 rotated = rotation * position.xy;
-    gl_Position = vec4(rotated, 0.0, 1.0);
+    vec2 spiralPos = vec2(cos(theta), sin(theta)) * r;
+
+    gl_Position = vec4(spiralPos, 0.0, 1.0);
 }
