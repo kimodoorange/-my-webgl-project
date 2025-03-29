@@ -25,12 +25,12 @@ html, body {
   text-align: center;
   font-size: 36px;
   font-weight: bold;
-  mix-blend-mode: color-burn;
+  mix-blend-mode: screen;
+  background: transparent;
   color: #00ccff;
   animation: shiftColor 6s infinite alternate;
   z-index: 3;
   user-select: none;
-  cursor: pointer;
   letter-spacing: 0.25em;
   text-shadow:
     0 0 10px rgba(0, 204, 255, 0.8),
@@ -47,24 +47,76 @@ html, body {
   100% { color: #00ccff; }
 }
 
-.floating-panel {
+.floating-horizontal-panel {
   position: absolute;
-  top: 52%;
+  bottom: 10%;
   left: 50%;
-  transform: translate(-50%, 0);
-  width: 160px;
-  background: rgba(30, 30, 30, 0.7);
-  border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0, 204, 255, 0.3);
-  padding: 8px;
-  resize: both;
-  overflow-y: auto;
-  z-index: 4;
-  text-align: center;
-  font-size: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  transform: translateX(-50%);
+  width: 90vw;
+  height: auto;
+  background: rgba(30, 30, 30, 0.3);
   backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  border-radius: 10px;
+  z-index: 4;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   animation: panelPulse 10s infinite alternate;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  font-size: 12px;
+  text-shadow: 0 0 5px rgba(255,255,255,0.3);
+  animation: shiftColor 10s infinite alternate;
+}
+
+#controls-horizontal input[type="range"] {
+  width: 80px;
+}
+
+#controls-horizontal button {
+  background: black;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  margin-left: 10px;
+  font-family: 'Metal Mania', cursive;
+  font-size: 12px;
+  cursor: pointer;
+  animation: shiftColor 10s infinite alternate;
+}
+
+#midi-piano {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+}
+
+#midi-piano .key {
+  background: #111;
+  border: 1px solid #333;
+  color: white;
+  padding: 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-family: 'Metal Mania', cursive;
+  cursor: pointer;
+  animation: shiftColor 12s infinite alternate;
+}
+
+#midi-piano .key:hover {
+  background: #00ccff;
+  color: black;
 }
 
 @keyframes panelPulse {
@@ -73,40 +125,4 @@ html, body {
   50%  { box-shadow: 0 0 14px #ffff0066; }
   75%  { box-shadow: 0 0 12px #00ff9966; }
   100% { box-shadow: 0 0 10px #00ccff66; }
-}
-
-#control-header {
-  font-weight: bold;
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #eee;
-}
-
-#controls label {
-  display: block;
-  margin-top: 6px;
-  font-size: 12px;
-  color: #ccc;
-}
-
-#controls input[type="range"],
-#controls select {
-  width: 100%;
-}
-
-#controls button {
-  width: 100%;
-  margin-top: 6px;
-  padding: 6px;
-  background-color: #111;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-#controls button:hover {
-  background-color: #00ccff;
-  color: black;
 }
