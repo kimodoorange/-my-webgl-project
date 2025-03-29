@@ -1,4 +1,3 @@
-
 let canvas = document.getElementById('glCanvas');
 let gl = canvas.getContext('webgl');
 canvas.width = window.innerWidth;
@@ -169,7 +168,7 @@ async function init() {
     updateAudioParams();
   };
 
-  // Fullscreen & Randomizer
+  // Randomizer
   document.getElementById('randomize-button').onclick = () => {
     ['frequency','formFluidity','chromaticIntensity','tempoVariance'].forEach(k => {
       s[k] = Math.random();
@@ -219,6 +218,7 @@ const drumSounds = {
   'hi-hat': 'audio/hi-hat.wav',
   bass2: 'audio/bass-drum2.wav' // Add bass2 sound
 };
+
 function playDrumSound(type) {
   const audio = new Audio(drumSounds[type]);
   audio.play();
